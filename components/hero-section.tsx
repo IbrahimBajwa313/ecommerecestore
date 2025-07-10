@@ -1,71 +1,69 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
+import { motion } from "framer-motion"
 
 export function HeroSection() {
   return (
-    <section className="relative bg-gradient-to-r from-purple-600 to-blue-600 text-white">
-      <div className="container mx-auto px-4 py-20 lg:py-32">
+    <section className="relative bg-white overflow-hidden">
+      <div className="container mx-auto px-4 py-15 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-4xl lg:text-6xl font-bold leading-tight">
-                Discover Premium Products for Modern Living
-              </h1>
-              <p className="text-xl lg:text-2xl text-purple-100">
-                Shop the latest trends with fast shipping and exceptional customer service
-              </p>
-            </div>
+          {/* Left Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
+            <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              Elevate Your Style with <br className="hidden lg:block" />
+              Handpicked Products
+            </h1>
+            <p className="text-lg text-gray-600 max-w-xl">
+              Discover exclusive fashion, home & lifestyle picks crafted for elegance and everyday luxury.
+            </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg" className="bg-white text-purple-600 hover:bg-gray-100">
+              <Button asChild size="lg" className="bg-black text-white hover:bg-gray-800 rounded-full px-8 py-6 text-lg">
                 <Link href="/products">
-                  Shop Now
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                  Shop Now <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-white text-white hover:bg-white hover:text-purple-600 bg-transparent"
+                className="border-gray-300 text-gray-800 hover:bg-gray-100 rounded-full px-8 py-6 text-lg"
               >
-                <Link href="/categories">Browse Categories</Link>
+                <Link href="/categories">Explore Categories</Link>
               </Button>
             </div>
+          </motion.div>
 
-            <div className="flex items-center space-x-8 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>Free Shipping</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>30-Day Returns</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>24/7 Support</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="relative z-10">
+          {/* Right Image */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="relative"
+          >
+            <div className="relative w-full h-[400px] lg:h-[500px]">
               <Image
-                src="/headphone1.png?height=600&width=600"
+                src={'https://images.unsplash.com/photo-1617137968427-85924c800a22?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%253D%253D&auto=format&fit=crop&w=1740&q=80'}
                 alt="Hero Product"
-                width={600}
-                height={600}
-                className="rounded-2xl shadow-2xl"
-                priority
+                fill
+                className="object-cover rounded-3xl shadow-xl"
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-2xl transform rotate-6 scale-105 opacity-20"></div>
-          </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* Background Gradient */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-[-1] bg-gradient-to-tr from-[#fef3f2] via-[#fdf6f9] to-[#f6fafe]" />
     </section>
   )
 }
