@@ -1,8 +1,9 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
-import { useState, useEffect } from "react"
+import type { ReactElement } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Plus, Search, Edit, Trash2, Eye, Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -48,7 +49,245 @@ interface Category {
   slug: string
 }
 
-export function ProductManagement() {
+interface ProductFormData {
+  name: string
+  description: string
+  price: string
+  originalPrice: string
+  category: string
+  stock: string
+  sku: string
+  status: string
+  features: string
+  tags: string
+  images: string[]
+}
+
+const ProductForm = React.memo<{
+  formData: ProductFormData
+  setFormData: React.Dispatch<React.SetStateAction<ProductFormData>>
+  categories: Category[]
+  onSubmit: (e: React.FormEvent) => void
+  isSubmitting: boolean
+  uploadingImages: boolean
+  onImageUpload: (files: FileList | null) => void
+  onRemoveImage: (index: number) => void
+  onCancel: () => void
+  isEdit?: boolean
+}>(
+  ({
+    formData,
+    setFormData,
+    categories,
+    onSubmit,
+    isSubmitting,
+    uploadingImages,
+    onImageUpload,
+    onRemoveImage,
+    onCancel,
+    isEdit = false,
+  }) => {
+    const handleInputChange = useCallback(
+      (field: keyof ProductFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData((prev) => ({ ...prev, [field]: e.target.value }))
+      },
+      [setFormData],
+    )
+
+    const handleSelectChange = useCallback(
+      (field: keyof ProductFormData) => (value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }))
+      },
+      [setFormData],
+    )
+
+    return (
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}name`}>Product Name</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}name`}
+              value={formData.name}
+              onChange={handleInputChange("name")}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}sku`}>SKU</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}sku`}
+              value={formData.sku}
+              onChange={handleInputChange("sku")}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={`${isEdit ? "edit-" : ""}description`}>Description</Label>
+          <Textarea
+            id={`${isEdit ? "edit-" : ""}description`}
+            value={formData.description}
+            onChange={handleInputChange("description")}
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}price`}>Price ($)</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}price`}
+              type="number"
+              step="0.01"
+              value={formData.price}
+              onChange={handleInputChange("price")}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}originalPrice`}>Original Price ($)</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}originalPrice`}
+              type="number"
+              step="0.01"
+              value={formData.originalPrice}
+              onChange={handleInputChange("originalPrice")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}stock`}>Stock</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}stock`}
+              type="number"
+              value={formData.stock}
+              onChange={handleInputChange("stock")}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}category`}>Category</Label>
+            <Select value={formData.category} onValueChange={handleSelectChange("category")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category._id} value={category._id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}status`}>Status</Label>
+            <Select value={formData.status} onValueChange={handleSelectChange("status")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Image Upload Section */}
+        <div className="space-y-2">
+          <Label>Product Images</Label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <div className="text-center">
+              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+              <div className="mt-2">
+                <Label htmlFor={`${isEdit ? "edit-" : ""}images`} className="cursor-pointer">
+                  <span className="text-sm text-blue-600 hover:text-blue-500">Click to upload images</span>
+                  <Input
+                    id={`${isEdit ? "edit-" : ""}images`}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => onImageUpload(e.target.files)}
+                    disabled={uploadingImages}
+                  />
+                </Label>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB each</p>
+            </div>
+          </div>
+
+          {/* Image Preview */}
+          {formData.images.length > 0 && (
+            <div className="grid grid-cols-4 gap-4 mt-4">
+              {formData.images.map((image, index) => (
+                <div key={index} className="relative group">
+                  <Image
+                    src={image || "/placeholder.svg"}
+                    alt={`Product image ${index + 1}`}
+                    width={100}
+                    height={100}
+                    className="w-full h-24 object-cover rounded-lg border"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => onRemoveImage(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {uploadingImages && <div className="text-center text-sm text-gray-500">Uploading images...</div>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={`${isEdit ? "edit-" : ""}features`}>Features (comma-separated)</Label>
+          <Textarea
+            id={`${isEdit ? "edit-" : ""}features`}
+            value={formData.features}
+            onChange={handleInputChange("features")}
+            placeholder="Feature 1, Feature 2, Feature 3"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor={`${isEdit ? "edit-" : ""}tags`}>Tags (comma-separated)</Label>
+          <Input
+            id={`${isEdit ? "edit-" : ""}tags`}
+            value={formData.tags}
+            onChange={handleInputChange("tags")}
+            placeholder="tag1, tag2, tag3"
+          />
+        </div>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting || uploadingImages}>
+            {isSubmitting ? (isEdit ? "Updating..." : "Adding...") : isEdit ? "Update Product" : "Add Product"}
+          </Button>
+        </DialogFooter>
+      </form>
+    )
+  },
+)
+
+ProductForm.displayName = "ProductForm"
+
+export function ProductManagement(): ReactElement {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -60,7 +299,7 @@ export function ProductManagement() {
   const [uploadingImages, setUploadingImages] = useState(false)
   const { toast } = useToast()
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     description: "",
     price: "",
@@ -71,15 +310,10 @@ export function ProductManagement() {
     status: "active",
     features: "",
     tags: "",
-    images: [] as string[],
+    images: [],
   })
 
-  useEffect(() => {
-    fetchProducts()
-    fetchCategories()
-  }, [])
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await fetch("/api/admin/products")
       if (response.ok) {
@@ -96,9 +330,9 @@ export function ProductManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch("/api/categories")
       if (response.ok) {
@@ -108,9 +342,9 @@ export function ProductManagement() {
     } catch (error) {
       console.error("Error fetching categories:", error)
     }
-  }
+  }, [])
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setFormData({
       name: "",
       description: "",
@@ -124,208 +358,220 @@ export function ProductManagement() {
       tags: "",
       images: [],
     })
-  }
+  }, [])
 
-  const handleImageUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return
+  const handleImageUpload = useCallback(
+    async (files: FileList | null) => {
+      if (!files || files.length === 0) return
 
-    setUploadingImages(true)
-    const uploadedUrls: string[] = []
+      setUploadingImages(true)
+      const uploadedUrls: string[] = []
 
-    try {
-      for (const file of Array.from(files)) {
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          toast({
-            title: "Error",
-            description: "Please select only image files",
-            variant: "destructive",
+      try {
+        for (const file of Array.from(files)) {
+          // Validate file type
+          if (!file.type.startsWith("image/")) {
+            toast({
+              title: "Error",
+              description: "Please select only image files",
+              variant: "destructive",
+            })
+            continue
+          }
+
+          // Validate file size (5MB limit)
+          if (file.size > 5 * 1024 * 1024) {
+            toast({
+              title: "Error",
+              description: "Image size should be less than 5MB",
+              variant: "destructive",
+            })
+            continue
+          }
+
+          const formData = new FormData()
+          formData.append("file", file)
+
+          const response = await fetch("/api/upload-local", {
+            method: "POST",
+            body: formData,
           })
-          continue
+
+          if (response.ok) {
+            const data = await response.json()
+            uploadedUrls.push(data.url)
+          } else {
+            throw new Error("Failed to upload image")
+          }
         }
 
-        // Validate file size (5MB limit)
-        if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "Error",
-            description: "Image size should be less than 5MB",
-            variant: "destructive",
-          })
-          continue
-        }
+        // Add uploaded URLs to form data
+        setFormData((prev) => ({
+          ...prev,
+          images: [...prev.images, ...uploadedUrls],
+        }))
 
-        const formData = new FormData()
-        formData.append("file", file)
-
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
+        toast({
+          title: "Success",
+          description: `${uploadedUrls.length} image(s) uploaded successfully`,
         })
-
-        if (response.ok) {
-          const data = await response.json()
-          uploadedUrls.push(data.url)
-        } else {
-          throw new Error("Failed to upload image")
-        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to upload images",
+          variant: "destructive",
+        })
+      } finally {
+        setUploadingImages(false)
       }
+    },
+    [toast],
+  )
 
-      // Add uploaded URLs to form data
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...uploadedUrls],
-      }))
-
-      toast({
-        title: "Success",
-        description: `${uploadedUrls.length} image(s) uploaded successfully`,
-      })
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to upload images",
-        variant: "destructive",
-      })
-    } finally {
-      setUploadingImages(false)
-    }
-  }
-
-  const removeImage = (index: number) => {
+  const removeImage = useCallback((index: number) => {
     setFormData((prev) => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
     }))
-  }
+  }, [])
 
-  const handleAddProduct = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const handleAddProduct = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      setIsSubmitting(true)
 
-    try {
-      const productData = {
-        ...formData,
-        price: Number.parseFloat(formData.price),
-        originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
-        stock: Number.parseInt(formData.stock),
-        features: formData.features
-          .split(",")
-          .map((f) => f.trim())
-          .filter(Boolean),
-        tags: formData.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
-      }
+      try {
+        const productData = {
+          ...formData,
+          price: Number.parseFloat(formData.price),
+          originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
+          stock: Number.parseInt(formData.stock),
+          features: formData.features
+            .split(",")
+            .map((f) => f.trim())
+            .filter(Boolean),
+          tags: formData.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+        }
 
-      const response = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
-      })
-
-      if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Product added successfully",
+        const response = await fetch("/api/admin/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(productData),
         })
-        setIsAddDialogOpen(false)
-        resetForm()
-        fetchProducts()
-      } else {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to add product")
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to add product",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
-  const handleEditProduct = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!selectedProduct) return
-
-    setIsSubmitting(true)
-
-    try {
-      const productData = {
-        ...formData,
-        price: Number.parseFloat(formData.price),
-        originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
-        stock: Number.parseInt(formData.stock),
-        features: formData.features
-          .split(",")
-          .map((f) => f.trim())
-          .filter(Boolean),
-        tags: formData.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
-      }
-
-      const response = await fetch(`/api/admin/products/${selectedProduct._id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
-      })
-
-      if (response.ok) {
+        if (response.ok) {
+          toast({
+            title: "Success",
+            description: "Product added successfully",
+          })
+          setIsAddDialogOpen(false)
+          resetForm()
+          fetchProducts()
+        } else {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to add product")
+        }
+      } catch (error) {
         toast({
-          title: "Success",
-          description: "Product updated successfully",
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to add product",
+          variant: "destructive",
         })
-        setIsEditDialogOpen(false)
-        resetForm()
-        setSelectedProduct(null)
-        fetchProducts()
-      } else {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Failed to update product")
+      } finally {
+        setIsSubmitting(false)
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update product",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+    },
+    [formData, toast, resetForm, fetchProducts],
+  )
 
-  const handleDeleteProduct = async (productId: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) return
+  const handleEditProduct = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!selectedProduct) return
 
-    try {
-      const response = await fetch(`/api/admin/products/${productId}`, {
-        method: "DELETE",
-      })
+      setIsSubmitting(true)
 
-      if (response.ok) {
+      try {
+        const productData = {
+          ...formData,
+          price: Number.parseFloat(formData.price),
+          originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
+          stock: Number.parseInt(formData.stock),
+          features: formData.features
+            .split(",")
+            .map((f) => f.trim())
+            .filter(Boolean),
+          tags: formData.tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+        }
+
+        const response = await fetch(`/api/admin/products/${selectedProduct._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(productData),
+        })
+
+        if (response.ok) {
+          toast({
+            title: "Success",
+            description: "Product updated successfully",
+          })
+          setIsEditDialogOpen(false)
+          resetForm()
+          setSelectedProduct(null)
+          fetchProducts()
+        } else {
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to update product")
+        }
+      } catch (error) {
         toast({
-          title: "Success",
-          description: "Product deleted successfully",
+          title: "Error",
+          description: error instanceof Error ? error.message : "Failed to update product",
+          variant: "destructive",
         })
-        fetchProducts()
-      } else {
-        throw new Error("Failed to delete product")
+      } finally {
+        setIsSubmitting(false)
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete product",
-        variant: "destructive",
-      })
-    }
-  }
+    },
+    [formData, selectedProduct, toast, resetForm, fetchProducts],
+  )
 
-  const openEditDialog = (product: Product) => {
+  const handleDeleteProduct = useCallback(
+    async (productId: string) => {
+      if (!confirm("Are you sure you want to delete this product?")) return
+
+      try {
+        const response = await fetch(`/api/admin/products/${productId}`, {
+          method: "DELETE",
+        })
+
+        if (response.ok) {
+          toast({
+            title: "Success",
+            description: "Product deleted successfully",
+          })
+          fetchProducts()
+        } else {
+          throw new Error("Failed to delete product")
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete product",
+          variant: "destructive",
+        })
+      }
+    },
+    [toast, fetchProducts],
+  )
+
+  const openEditDialog = useCallback((product: Product) => {
     setSelectedProduct(product)
     setFormData({
       name: product.name,
@@ -341,7 +587,23 @@ export function ProductManagement() {
       images: product.images,
     })
     setIsEditDialogOpen(true)
-  }
+  }, [])
+
+  const handleCancelAdd = useCallback(() => {
+    setIsAddDialogOpen(false)
+    resetForm()
+  }, [resetForm])
+
+  const handleCancelEdit = useCallback(() => {
+    setIsEditDialogOpen(false)
+    resetForm()
+    setSelectedProduct(null)
+  }, [resetForm])
+
+  useEffect(() => {
+    fetchProducts()
+    fetchCategories()
+  }, [fetchProducts, fetchCategories])
 
   const filteredProducts = products.filter(
     (product) =>
@@ -369,192 +631,6 @@ export function ProductManagement() {
     )
   }
 
-  const ProductForm = ({ isEdit = false }: { isEdit?: boolean }) => (
-    <form onSubmit={isEdit ? handleEditProduct : handleAddProduct} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-name" : "name"}>Product Name</Label>
-          <Input
-            id={isEdit ? "edit-name" : "name"}
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-sku" : "sku"}>SKU</Label>
-          <Input
-            id={isEdit ? "edit-sku" : "sku"}
-            value={formData.sku}
-            onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-            required
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor={isEdit ? "edit-description" : "description"}>Description</Label>
-        <Textarea
-          id={isEdit ? "edit-description" : "description"}
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          required
-        />
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-price" : "price"}>Price ($)</Label>
-          <Input
-            id={isEdit ? "edit-price" : "price"}
-            type="number"
-            step="0.01"
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            required
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-originalPrice" : "originalPrice"}>Original Price ($)</Label>
-          <Input
-            id={isEdit ? "edit-originalPrice" : "originalPrice"}
-            type="number"
-            step="0.01"
-            value={formData.originalPrice}
-            onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-stock" : "stock"}>Stock</Label>
-          <Input
-            id={isEdit ? "edit-stock" : "stock"}
-            type="number"
-            value={formData.stock}
-            onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-            required
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-category" : "category"}>Category</Label>
-          <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category._id} value={category._id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-status" : "status"}>Status</Label>
-          <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-              <SelectItem value="out_of_stock">Out of Stock</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Image Upload Section */}
-      <div className="space-y-2">
-        <Label>Product Images</Label>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-          <div className="text-center">
-            <Upload className="mx-auto h-12 w-12 text-gray-400" />
-            <div className="mt-2">
-              <Label htmlFor={isEdit ? "edit-images" : "images"} className="cursor-pointer">
-                <span className="text-sm text-blue-600 hover:text-blue-500">Click to upload images</span>
-                <Input
-                  id={isEdit ? "edit-images" : "images"}
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => handleImageUpload(e.target.files)}
-                  disabled={uploadingImages}
-                />
-              </Label>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB each</p>
-          </div>
-        </div>
-
-        {/* Image Preview */}
-        {formData.images.length > 0 && (
-          <div className="grid grid-cols-4 gap-4 mt-4">
-            {formData.images.map((image, index) => (
-              <div key={index} className="relative group">
-                <Image
-                  src={image || "/placeholder.svg"}
-                  alt={`Product image ${index + 1}`}
-                  width={100}
-                  height={100}
-                  className="w-full h-24 object-cover rounded-lg border"
-                />
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => removeImage(index)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {uploadingImages && <div className="text-center text-sm text-gray-500">Uploading images...</div>}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor={isEdit ? "edit-features" : "features"}>Features (comma-separated)</Label>
-        <Textarea
-          id={isEdit ? "edit-features" : "features"}
-          value={formData.features}
-          onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-          placeholder="Feature 1, Feature 2, Feature 3"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor={isEdit ? "edit-tags" : "tags"}>Tags (comma-separated)</Label>
-        <Input
-          id={isEdit ? "edit-tags" : "tags"}
-          value={formData.tags}
-          onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-          placeholder="tag1, tag2, tag3"
-        />
-      </div>
-
-      <DialogFooter>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => (isEdit ? setIsEditDialogOpen(false) : setIsAddDialogOpen(false))}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting || uploadingImages}>
-          {isSubmitting ? (isEdit ? "Updating..." : "Adding...") : isEdit ? "Update Product" : "Add Product"}
-        </Button>
-      </DialogFooter>
-    </form>
-  )
-
   return (
     <div className="space-y-6">
       <Card>
@@ -573,7 +649,17 @@ export function ProductManagement() {
                   <DialogTitle>Add New Product</DialogTitle>
                   <DialogDescription>Create a new product for your store</DialogDescription>
                 </DialogHeader>
-                <ProductForm />
+                <ProductForm
+                  formData={formData}
+                  setFormData={setFormData}
+                  categories={categories}
+                  onSubmit={handleAddProduct}
+                  isSubmitting={isSubmitting}
+                  uploadingImages={uploadingImages}
+                  onImageUpload={handleImageUpload}
+                  onRemoveImage={removeImage}
+                  onCancel={handleCancelAdd}
+                />
               </DialogContent>
             </Dialog>
           </div>
@@ -672,7 +758,18 @@ export function ProductManagement() {
             <DialogTitle>Edit Product</DialogTitle>
             <DialogDescription>Update product information</DialogDescription>
           </DialogHeader>
-          <ProductForm isEdit={true} />
+          <ProductForm
+            formData={formData}
+            setFormData={setFormData}
+            categories={categories}
+            onSubmit={handleEditProduct}
+            isSubmitting={isSubmitting}
+            uploadingImages={uploadingImages}
+            onImageUpload={handleImageUpload}
+            onRemoveImage={removeImage}
+            onCancel={handleCancelEdit}
+            isEdit={true}
+          />
         </DialogContent>
       </Dialog>
     </div>

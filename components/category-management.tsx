@@ -1,9 +1,10 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 
+import type { ReactElement } from "react"
 import { useState, useEffect, useCallback } from "react"
-import { Plus, Search, Edit, Trash2, Eye, Upload, X } from "lucide-react"
+import { Plus, Search, Edit, Trash2, Upload, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,7 +13,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import {
   Dialog,
   DialogContent,
@@ -29,18 +29,17 @@ interface Category {
   _id: string
   name: string
   slug: string
-  description?: string
-  image?: string
+  description: string
+  image: string
   parent?: {
     _id: string
     name: string
   }
-  isActive: boolean
+  status: string
   sortOrder: number
   seoTitle?: string
   seoDescription?: string
-  createdAt: string
-  updatedAt: string
+  productCount?: number
 }
 
 interface CategoryFormData {
@@ -49,257 +48,222 @@ interface CategoryFormData {
   description: string
   image: string
   parent: string
-  isActive: boolean
-  sortOrder: number
+  status: string
+  sortOrder: string
   seoTitle: string
   seoDescription: string
 }
 
-const initialFormData: CategoryFormData = {
-  name: "",
-  slug: "",
-  description: "",
-  image: "",
-  parent: "",
-  isActive: true,
-  sortOrder: 0,
-  seoTitle: "",
-  seoDescription: "",
-}
-
-// Separate CategoryForm component to prevent re-rendering issues
-function CategoryForm({
-  formData,
-  setFormData,
-  categories,
-  selectedCategory,
-  isEdit = false,
-  onSubmit,
-  onCancel,
-  isSubmitting,
-  uploadingImage,
-  onImageUpload,
-}: {
+const CategoryForm = React.memo<{
   formData: CategoryFormData
-  setFormData: (data: CategoryFormData) => void
+  setFormData: React.Dispatch<React.SetStateAction<CategoryFormData>>
   categories: Category[]
-  selectedCategory: Category | null
-  isEdit?: boolean
   onSubmit: (e: React.FormEvent) => void
-  onCancel: () => void
   isSubmitting: boolean
   uploadingImage: boolean
-  onImageUpload: (file: File) => void
-}) {
-  const generateSlug = useCallback((name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9 -]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim()
-  }, [])
+  onImageUpload: (files: FileList | null) => void
+  onRemoveImage: () => void
+  onCancel: () => void
+  isEdit?: boolean
+}>(
+  ({
+    formData,
+    setFormData,
+    categories,
+    onSubmit,
+    isSubmitting,
+    uploadingImage,
+    onImageUpload,
+    onRemoveImage,
+    onCancel,
+    isEdit = false,
+  }) => {
+    const handleInputChange = useCallback(
+      (field: keyof CategoryFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const value = e.target.value
+        setFormData((prev) => {
+          const updated = { ...prev, [field]: value }
 
-  const handleNameChange = useCallback(
-    (name: string) => {
-      setFormData({
-        ...formData,
-        name,
-        slug: generateSlug(name),
-      })
-    },
-    [formData, setFormData, generateSlug],
-  )
+          // Auto-generate slug from name
+          if (field === "name" && !isEdit) {
+            updated.slug = value
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "")
+          }
 
-  const handleInputChange = useCallback(
-    (field: keyof CategoryFormData, value: string | number | boolean) => {
-      setFormData({
-        ...formData,
-        [field]: value,
-      })
-    },
-    [formData, setFormData],
-  )
+          return updated
+        })
+      },
+      [setFormData, isEdit],
+    )
 
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (file) {
-        onImageUpload(file)
-      }
-    },
-    [onImageUpload],
-  )
+    const handleSelectChange = useCallback(
+      (field: keyof CategoryFormData) => (value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }))
+      },
+      [setFormData],
+    )
 
-  const removeImage = useCallback(() => {
-    setFormData({
-      ...formData,
-      image: "",
-    })
-  }, [formData, setFormData])
-
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-name" : "name"}>Category Name</Label>
-          <Input
-            id={isEdit ? "edit-name" : "name"}
-            value={formData.name}
-            onChange={(e) => handleNameChange(e.target.value)}
-            required
-            placeholder="Enter category name"
-          />
+    return (
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}name`}>Category Name</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}name`}
+              value={formData.name}
+              onChange={handleInputChange("name")}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}slug`}>Slug</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}slug`}
+              value={formData.slug}
+              onChange={handleInputChange("slug")}
+              required
+            />
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-slug" : "slug"}>Slug</Label>
-          <Input
-            id={isEdit ? "edit-slug" : "slug"}
-            value={formData.slug}
-            onChange={(e) => handleInputChange("slug", e.target.value)}
-            required
-            placeholder="category-slug"
-          />
-        </div>
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor={isEdit ? "edit-description" : "description"}>Description</Label>
-        <Textarea
-          id={isEdit ? "edit-description" : "description"}
-          value={formData.description}
-          onChange={(e) => handleInputChange("description", e.target.value)}
-          placeholder="Category description..."
-          rows={3}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-parent" : "parent"}>Parent Category</Label>
-          <Select
-            value={formData.parent}
-            onValueChange={(value) => handleInputChange("parent", value === "none" ? "" : value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select parent category (optional)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No Parent</SelectItem>
-              {categories
-                .filter((cat) => cat._id !== selectedCategory?._id)
-                .map((category) => (
-                  <SelectItem key={category._id} value={category._id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-sortOrder" : "sortOrder"}>Sort Order</Label>
-          <Input
-            id={isEdit ? "edit-sortOrder" : "sortOrder"}
-            type="number"
-            value={formData.sortOrder}
-            onChange={(e) => handleInputChange("sortOrder", Number.parseInt(e.target.value) || 0)}
-            placeholder="0"
-          />
-        </div>
-      </div>
-
-      {/* Image Upload Section */}
-      <div className="space-y-2">
-        <Label>Category Image</Label>
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-          {formData.image ? (
-            <div className="relative inline-block">
-              <Image
-                src={formData.image || "/placeholder.svg"}
-                alt="Category preview"
-                width={200}
-                height={150}
-                className="rounded-lg object-cover mx-auto"
-              />
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                className="absolute top-2 right-2"
-                onClick={removeImage}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="text-center">
-              <Upload className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="mt-2">
-                <Label htmlFor={isEdit ? "edit-image" : "image"} className="cursor-pointer">
-                  <span className="text-sm text-blue-600 hover:text-blue-500">Click to upload image</span>
-                  <Input
-                    id={isEdit ? "edit-image" : "image"}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileChange}
-                    disabled={uploadingImage}
-                  />
-                </Label>
-              </div>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB</p>
-            </div>
-          )}
-        </div>
-        {uploadingImage && <div className="text-center text-sm text-gray-500">Uploading image...</div>}
-      </div>
-
-      {/* SEO Section */}
-      <div className="space-y-4 border-t pt-4">
-        <h4 className="font-medium">SEO Settings</h4>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-seoTitle" : "seoTitle"}>SEO Title</Label>
-          <Input
-            id={isEdit ? "edit-seoTitle" : "seoTitle"}
-            value={formData.seoTitle}
-            onChange={(e) => handleInputChange("seoTitle", e.target.value)}
-            placeholder="SEO title for search engines"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor={isEdit ? "edit-seoDescription" : "seoDescription"}>SEO Description</Label>
+          <Label htmlFor={`${isEdit ? "edit-" : ""}description`}>Description</Label>
           <Textarea
-            id={isEdit ? "edit-seoDescription" : "seoDescription"}
-            value={formData.seoDescription}
-            onChange={(e) => handleInputChange("seoDescription", e.target.value)}
-            placeholder="SEO description for search engines"
-            rows={3}
+            id={`${isEdit ? "edit-" : ""}description`}
+            value={formData.description}
+            onChange={handleInputChange("description")}
           />
         </div>
-      </div>
 
-      <div className="flex items-center space-x-2">
-        <Switch
-          id={isEdit ? "edit-isActive" : "isActive"}
-          checked={formData.isActive}
-          onCheckedChange={(checked) => handleInputChange("isActive", checked)}
-        />
-        <Label htmlFor={isEdit ? "edit-isActive" : "isActive"}>Active</Label>
-      </div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}parent`}>Parent Category</Label>
+            <Select value={formData.parent} onValueChange={handleSelectChange("parent")}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select parent (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None (Root Category)</SelectItem>
+                {categories
+                  .filter((cat) => !cat.parent)
+                  .map((category) => (
+                    <SelectItem key={category._id} value={category._id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}status`}>Status</Label>
+            <Select value={formData.status} onValueChange={handleSelectChange("status")}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}sortOrder`}>Sort Order</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}sortOrder`}
+              type="number"
+              value={formData.sortOrder}
+              onChange={handleInputChange("sortOrder")}
+            />
+          </div>
+        </div>
 
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting || uploadingImage}>
-          {isSubmitting ? (isEdit ? "Updating..." : "Adding...") : isEdit ? "Update Category" : "Add Category"}
-        </Button>
-      </DialogFooter>
-    </form>
-  )
-}
+        {/* Image Upload Section */}
+        <div className="space-y-2">
+          <Label>Category Image</Label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            {formData.image ? (
+              <div className="relative">
+                <Image
+                  src={formData.image || "/placeholder.svg"}
+                  alt="Category image"
+                  width={200}
+                  height={150}
+                  className="w-full h-32 object-cover rounded-lg"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2"
+                  onClick={onRemoveImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-2">
+                  <Label htmlFor={`${isEdit ? "edit-" : ""}image`} className="cursor-pointer">
+                    <span className="text-sm text-blue-600 hover:text-blue-500">Click to upload image</span>
+                    <Input
+                      id={`${isEdit ? "edit-" : ""}image`}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => onImageUpload(e.target.files)}
+                      disabled={uploadingImage}
+                    />
+                  </Label>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB</p>
+              </div>
+            )}
+          </div>
+          {uploadingImage && <div className="text-center text-sm text-gray-500">Uploading image...</div>}
+        </div>
 
-export function CategoryManagement() {
+        {/* SEO Section */}
+        <div className="space-y-4 border-t pt-4">
+          <h4 className="font-medium">SEO Settings</h4>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}seoTitle`}>SEO Title</Label>
+            <Input
+              id={`${isEdit ? "edit-" : ""}seoTitle`}
+              value={formData.seoTitle}
+              onChange={handleInputChange("seoTitle")}
+              placeholder="Leave empty to use category name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor={`${isEdit ? "edit-" : ""}seoDescription`}>SEO Description</Label>
+            <Textarea
+              id={`${isEdit ? "edit-" : ""}seoDescription`}
+              value={formData.seoDescription}
+              onChange={handleInputChange("seoDescription")}
+              placeholder="Meta description for search engines"
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting || uploadingImage}>
+            {isSubmitting ? (isEdit ? "Updating..." : "Adding...") : isEdit ? "Update Category" : "Add Category"}
+          </Button>
+        </DialogFooter>
+      </form>
+    )
+  },
+)
+
+CategoryForm.displayName = "CategoryForm"
+
+export function CategoryManagement(): ReactElement {
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
@@ -308,14 +272,21 @@ export function CategoryManagement() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [formData, setFormData] = useState<CategoryFormData>(initialFormData)
   const { toast } = useToast()
 
-  useEffect(() => {
-    fetchCategories()
-  }, [])
+  const [formData, setFormData] = useState<CategoryFormData>({
+    name: "",
+    slug: "",
+    description: "",
+    image: "",
+    parent: "none",
+    status: "active",
+    sortOrder: "0",
+    seoTitle: "",
+    seoDescription: "",
+  })
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await fetch("/api/admin/categories")
       if (response.ok) {
@@ -332,16 +303,27 @@ export function CategoryManagement() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [toast])
 
   const resetForm = useCallback(() => {
-    setFormData(initialFormData)
+    setFormData({
+      name: "",
+      slug: "",
+      description: "",
+      image: "",
+      parent: "none",
+      status: "active",
+      sortOrder: "0",
+      seoTitle: "",
+      seoDescription: "",
+    })
   }, [])
 
   const handleImageUpload = useCallback(
-    async (file: File) => {
-      if (!file) return
+    async (files: FileList | null) => {
+      if (!files || files.length === 0) return
 
+      const file = files[0]
       setUploadingImage(true)
 
       try {
@@ -368,17 +350,14 @@ export function CategoryManagement() {
         const formDataUpload = new FormData()
         formDataUpload.append("file", file)
 
-        const response = await fetch("/api/upload", {
+        const response = await fetch("/api/upload-local", {
           method: "POST",
           body: formDataUpload,
         })
 
         if (response.ok) {
           const data = await response.json()
-          setFormData((prev) => ({
-            ...prev,
-            image: data.url,
-          }))
+          setFormData((prev) => ({ ...prev, image: data.url }))
           toast({
             title: "Success",
             description: "Image uploaded successfully",
@@ -399,6 +378,10 @@ export function CategoryManagement() {
     [toast],
   )
 
+  const removeImage = useCallback(() => {
+    setFormData((prev) => ({ ...prev, image: "" }))
+  }, [])
+
   const handleAddCategory = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault()
@@ -407,7 +390,8 @@ export function CategoryManagement() {
       try {
         const categoryData = {
           ...formData,
-          parent: formData.parent || undefined,
+          sortOrder: Number.parseInt(formData.sortOrder) || 0,
+          parent: formData.parent === "none" ? undefined : formData.parent,
         }
 
         const response = await fetch("/api/admin/categories", {
@@ -438,7 +422,7 @@ export function CategoryManagement() {
         setIsSubmitting(false)
       }
     },
-    [formData, toast, resetForm],
+    [formData, toast, resetForm, fetchCategories],
   )
 
   const handleEditCategory = useCallback(
@@ -451,7 +435,8 @@ export function CategoryManagement() {
       try {
         const categoryData = {
           ...formData,
-          parent: formData.parent || undefined,
+          sortOrder: Number.parseInt(formData.sortOrder) || 0,
+          parent: formData.parent === "none" ? undefined : formData.parent,
         }
 
         const response = await fetch(`/api/admin/categories/${selectedCategory._id}`, {
@@ -483,7 +468,7 @@ export function CategoryManagement() {
         setIsSubmitting(false)
       }
     },
-    [formData, selectedCategory, toast, resetForm],
+    [formData, selectedCategory, toast, resetForm, fetchCategories],
   )
 
   const handleDeleteCategory = useCallback(
@@ -513,7 +498,7 @@ export function CategoryManagement() {
         })
       }
     },
-    [toast],
+    [toast, fetchCategories],
   )
 
   const openEditDialog = useCallback((category: Category) => {
@@ -523,30 +508,29 @@ export function CategoryManagement() {
       slug: category.slug,
       description: category.description || "",
       image: category.image || "",
-      parent: category.parent?._id || "",
-      isActive: category.isActive,
-      sortOrder: category.sortOrder,
+      parent: category.parent?._id || "none",
+      status: category.status,
+      sortOrder: category.sortOrder.toString(),
       seoTitle: category.seoTitle || "",
       seoDescription: category.seoDescription || "",
     })
     setIsEditDialogOpen(true)
   }, [])
 
-  const handleAddDialogOpen = useCallback(() => {
-    resetForm()
-    setIsAddDialogOpen(true)
-  }, [resetForm])
-
-  const handleAddDialogClose = useCallback(() => {
+  const handleCancelAdd = useCallback(() => {
     setIsAddDialogOpen(false)
     resetForm()
   }, [resetForm])
 
-  const handleEditDialogClose = useCallback(() => {
+  const handleCancelEdit = useCallback(() => {
     setIsEditDialogOpen(false)
     resetForm()
     setSelectedCategory(null)
   }, [resetForm])
+
+  useEffect(() => {
+    fetchCategories()
+  }, [fetchCategories])
 
   const filteredCategories = categories.filter(
     (category) =>
@@ -581,7 +565,7 @@ export function CategoryManagement() {
             <CardTitle>Category Management</CardTitle>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={handleAddDialogOpen}>
+                <Button onClick={resetForm}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Category
                 </Button>
@@ -589,19 +573,18 @@ export function CategoryManagement() {
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Add New Category</DialogTitle>
-                  <DialogDescription>Create a new category for your products</DialogDescription>
+                  <DialogDescription>Create a new category for your store</DialogDescription>
                 </DialogHeader>
                 <CategoryForm
                   formData={formData}
                   setFormData={setFormData}
                   categories={categories}
-                  selectedCategory={null}
-                  isEdit={false}
                   onSubmit={handleAddCategory}
-                  onCancel={handleAddDialogClose}
                   isSubmitting={isSubmitting}
                   uploadingImage={uploadingImage}
                   onImageUpload={handleImageUpload}
+                  onRemoveImage={removeImage}
+                  onCancel={handleCancelAdd}
                 />
               </DialogContent>
             </Dialog>
@@ -625,10 +608,10 @@ export function CategoryManagement() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Category</TableHead>
-                  <TableHead>Slug</TableHead>
                   <TableHead>Parent</TableHead>
-                  <TableHead>Sort Order</TableHead>
+                  <TableHead>Products</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Sort Order</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -646,27 +629,18 @@ export function CategoryManagement() {
                         />
                         <div>
                           <div className="font-medium">{category.name}</div>
-                          {category.description && (
-                            <div className="text-sm text-gray-500 line-clamp-1">{category.description}</div>
-                          )}
+                          <div className="text-sm text-gray-500">{category.slug}</div>
                         </div>
                       </div>
                     </TableCell>
+                    <TableCell>{category.parent?.name || "Root"}</TableCell>
+                    <TableCell>{category.productCount || 0}</TableCell>
                     <TableCell>
-                      <code className="text-sm bg-gray-100 px-2 py-1 rounded">{category.slug}</code>
+                      <Badge variant={category.status === "active" ? "default" : "secondary"}>{category.status}</Badge>
                     </TableCell>
-                    <TableCell>{category.parent?.name || "—"}</TableCell>
                     <TableCell>{category.sortOrder}</TableCell>
-                    <TableCell>
-                      <Badge variant={category.isActive ? "default" : "secondary"}>
-                        {category.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
-                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(category)}>
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -694,13 +668,13 @@ export function CategoryManagement() {
             formData={formData}
             setFormData={setFormData}
             categories={categories}
-            selectedCategory={selectedCategory}
-            isEdit={true}
             onSubmit={handleEditCategory}
-            onCancel={handleEditDialogClose}
             isSubmitting={isSubmitting}
             uploadingImage={uploadingImage}
             onImageUpload={handleImageUpload}
+            onRemoveImage={removeImage}
+            onCancel={handleCancelEdit}
+            isEdit={true}
           />
         </DialogContent>
       </Dialog>

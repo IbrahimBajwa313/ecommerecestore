@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/mongodb"
 import Category from "@/models/Category"
+import Product from "@/models/Product"
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,10 +31,18 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .lean()
 
+    // Get product count for each category
+    const categoriesWithCount = await Promise.all(
+      categories.map(async (category) => {
+        const productCount = await Product.countDocuments({ category: category._id })
+        return { ...category, productCount }
+      }),
+    )
+
     const total = await Category.countDocuments(query)
 
     return NextResponse.json({
-      categories,
+      categories: categoriesWithCount,
       pagination: {
         page,
         limit,
@@ -71,13 +80,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Create category
     const category = new Category({
       name: categoryData.name,
       slug: categoryData.slug,
       description: categoryData.description,
       image: categoryData.image,
-      parent: categoryData.parent || undefined,
-      isActive: categoryData.isActive !== undefined ? categoryData.isActive : true,
+      parent: categoryData.parent || null,
+      status: categoryData.status || "active",
       sortOrder: categoryData.sortOrder || 0,
       seoTitle: categoryData.seoTitle,
       seoDescription: categoryData.seoDescription,

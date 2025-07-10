@@ -3,38 +3,58 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Eye, EyeOff, Mail } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { Eye, EyeOff } from "lucide-react"
 
 export function LoginForm() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast({
-        title: "Login successful",
-        description: "Welcome back to ModernStore!",
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        // Set auth cookie
+        document.cookie = `auth-token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}` // 7 days
+
+        toast({
+          title: "Success",
+          description: "Logged in successfully",
+        })
+
+        // Redirect based on user role
+        if (data.user.role === "admin") {
+          router.push("/admin")
+        } else {
+          router.push("/")
+        }
+      } else {
+        throw new Error(data.error || "Login failed")
+      }
     } catch (error) {
       toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
+        title: "Error",
+        description: error instanceof Error ? error.message : "Login failed",
         variant: "destructive",
       })
     } finally {
@@ -49,7 +69,6 @@ export function LoginForm() {
         <Input
           id="email"
           type="email"
-          placeholder="Enter your email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           required
@@ -62,7 +81,6 @@ export function LoginForm() {
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
@@ -79,33 +97,15 @@ export function LoginForm() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <label className="flex items-center space-x-2 text-sm">
-          <input type="checkbox" className="rounded" />
-          <span>Remember me</span>
-        </label>
-        <Button variant="link" className="px-0 text-sm">
-          Forgot password?
-        </Button>
-      </div>
-
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <Separator className="w-full" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-        </div>
+      <div className="text-sm text-center text-gray-600 mt-4">
+        <p>Demo Credentials:</p>
+        <p>Admin: admin@example.com / admin123</p>
+        <p>User: user@example.com / user123</p>
       </div>
-
-      <Button type="button" variant="outline" className="w-full bg-transparent">
-        <Mail className="mr-2 h-4 w-4" />
-        Continue with Google
-      </Button>
     </form>
   )
 }

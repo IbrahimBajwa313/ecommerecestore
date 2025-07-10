@@ -59,8 +59,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         slug: categoryData.slug,
         description: categoryData.description,
         image: categoryData.image,
-        parent: categoryData.parent || undefined,
-        isActive: categoryData.isActive,
+        parent: categoryData.parent || null,
+        status: categoryData.status,
         sortOrder: categoryData.sortOrder || 0,
         seoTitle: categoryData.seoTitle,
         seoDescription: categoryData.seoDescription,
@@ -84,19 +84,19 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     await connectDB()
 
     // Check if category has products
-    const productsCount = await Product.countDocuments({ category: params.id })
-    if (productsCount > 0) {
+    const productCount = await Product.countDocuments({ category: params.id })
+    if (productCount > 0) {
       return NextResponse.json(
-        { error: `Cannot delete category. It has ${productsCount} products assigned to it.` },
+        { error: `Cannot delete category with ${productCount} products. Move products to another category first.` },
         { status: 400 },
       )
     }
 
     // Check if category has subcategories
-    const subcategoriesCount = await Category.countDocuments({ parent: params.id })
-    if (subcategoriesCount > 0) {
+    const subcategoryCount = await Category.countDocuments({ parent: params.id })
+    if (subcategoryCount > 0) {
       return NextResponse.json(
-        { error: `Cannot delete category. It has ${subcategoriesCount} subcategories.` },
+        { error: `Cannot delete category with ${subcategoryCount} subcategories. Delete subcategories first.` },
         { status: 400 },
       )
     }
