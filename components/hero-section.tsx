@@ -54,7 +54,7 @@ export function HeroSection() {
           <div className="relative">
             <div className="relative z-10">
               <Image
-                src="/headphone1.png?height=600&width=600"
+                src="/headphone2.webp?height=600&width=600"
                 alt="Hero Product"
                 width={600}
                 height={600}
