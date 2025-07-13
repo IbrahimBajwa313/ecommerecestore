@@ -56,9 +56,8 @@ export function HeroSection() {
           >
             <div className="relative w-full h-[400px] lg:h-[500px]">
               <Image
-                src={
-                  "https://images.unsplash.com/photo-1617137968427-85924c800a22?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%253D%253D&auto=format&fit=crop&w=1740&q=80"
-                }
+
+                src="/headphone2.webp?height=600&width=600"
                 alt="Hero Product"
                 fill
                 className="object-cover rounded-3xl shadow-xl"
