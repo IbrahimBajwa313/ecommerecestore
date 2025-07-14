@@ -395,7 +395,7 @@ export function ProductManagement(): ReactElement {
           const response = await fetch("/api/upload-local", {
             method: "POST",
             body: formData,
-          })
+          }) 
 
           if (response.ok) {
             const data = await response.json()

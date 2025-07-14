@@ -28,7 +28,7 @@ export default function ProductsPage({
               <p className="text-muted-foreground">Discover our curated collection of premium products</p>
             </div>
             <Suspense fallback={<div>Loading products...</div>}>
-              <ProductGrid searchParams={searchParams} />
+              <ProductGrid searchParams={searchParams}  />
             </Suspense>
           </div>
         </div>

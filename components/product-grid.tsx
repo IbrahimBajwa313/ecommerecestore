@@ -38,7 +38,6 @@ export function ProductGrid({ searchParams }: ProductGridProps) {
       if (searchParams.search) params.set("search", searchParams.search)
       if (searchParams.minPrice) params.set("minPrice", searchParams.minPrice)
       if (searchParams.maxPrice) params.set("maxPrice", searchParams.maxPrice)
-
       const response = await fetch(`/api/products?${params.toString()}`)
       if (response.ok) {
         const data = await response.json()

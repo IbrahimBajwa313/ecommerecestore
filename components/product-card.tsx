@@ -1,9 +1,14 @@
+'use client'
 import Link from "next/link"
+import { useCart } from "@/context/cart-context"
 import Image from "next/image"
 import { Star, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
+
+import { useState } from "react"
 
 interface ProductCardProps {
   product: {
@@ -18,7 +23,48 @@ interface ProductCardProps {
   }
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps)
+
+{
+  const { setCart ,cart} = useCart()
+  const [quantity, setQuantity] = useState(1)
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const { toast } = useToast()
+  
+  const handleAddToCart = async () => { 
+    console.log(product?.id, quantity )
+    setIsAddingToCart(true)
+    try {
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: product?.id, quantity }),
+      })
+
+      if (response.ok) {
+        setCart(true)
+        toast({
+          title: "Added to cart",
+          description: `${product?.name} has been added to your cart.`,
+        })
+        // Delay resetting cart to false to ensure `cart` is true for a moment
+        setTimeout(() => setCart(false), 300)
+      } else {
+        throw new Error("Failed to add to cart")
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add item to cart. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsAddingToCart(false)
+    }
+  }
+
+
+  console.log('produts are',product)
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
@@ -97,13 +143,13 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
 
-          <Button 
+          <Button onClick={handleAddToCart}
             className="w-full transition-all duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] 
                       translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
             size="sm"
           >
             <ShoppingCart className="w-4 h-4 mr-2 transition-transform group-hover:scale-125" />
-            Add to Cart
+            {isAddingToCart ? "Adding..." : "Add to Cart"}
           </Button>
         </div>
       </CardContent>

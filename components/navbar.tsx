@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { useCart } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -12,14 +12,17 @@ import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Navbar() {
+  const { cart } = useCart()
+
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [cartItemCount, setCartItemCount] = useState(0)
   const router = useRouter()
-
+  
   useEffect(() => {
     fetchCartCount()
-  }, [])
+ 
+  }, [cart])
 
   const fetchCartCount = async () => {
     try {

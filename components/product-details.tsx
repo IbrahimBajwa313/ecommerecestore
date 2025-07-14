@@ -1,5 +1,5 @@
 "use client"
-
+import { useCart } from "@/context/cart-context"
 import { useState } from "react"
 import Image from "next/image"
 import { Star, ShoppingCart, Heart, Share2, Minus, Plus } from "lucide-react"
@@ -11,14 +11,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 
 interface Product {
-  id: string
+  stock: number
+  _id: string
   name: string
   description: string
   price: number
   originalPrice?: number
   images: string[]
   category: string
-  inStock: boolean
   rating: number
   reviews: number
   features: string[]
@@ -29,26 +29,33 @@ interface ProductDetailsProps {
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
+  const { setCart ,cart} = useCart()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const { toast } = useToast()
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async () => { 
+    
     setIsAddingToCart(true)
+   
+    
     try {
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product.id, quantity }),
+        body: JSON.stringify({ productId: product?._id, quantity }),
       })
-
       if (response.ok) {
+        setCart(true)
         toast({
           title: "Added to cart",
-          description: `${product.name} has been added to your cart.`,
+          description: `${product?.name} has been added to your cart.`,
         })
-      } else {
+      
+        // Delay resetting cart to false to ensure `cart` is true for a moment
+        setTimeout(() => setCart(false), 300)
+      }else {
         throw new Error("Failed to add to cart")
       }
     } catch (error) {
@@ -58,12 +65,13 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         variant: "destructive",
       })
     } finally {
+      console.log('cart is',cart)
       setIsAddingToCart(false)
     }
   }
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = product?.originalPrice
+    ? Math.round(((product?.originalPrice - product?.price) / product?.originalPrice) * 100)
     : 0
 
   return (
@@ -72,8 +80,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       <div className="space-y-4">
         <div className="aspect-square relative overflow-hidden rounded-lg border">
           <Image
-            src={product.images[selectedImage] || "/placeholder.svg"}
-            alt={product.name}
+            src={product?.images[selectedImage] || "/placeholder.svg"}
+            alt={product?.name}
             fill
             className="object-cover"
             priority
@@ -83,9 +91,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           )}
         </div>
 
-        {product.images.length > 1 && (
+        {product?.images.length > 1 && (
           <div className="grid grid-cols-4 gap-4">
-            {product.images.map((image, index) => (
+            {product?.images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
@@ -95,7 +103,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               >
                 <Image
                   src={image || "/placeholder.svg"}
-                  alt={`${product.name} ${index + 1}`}
+                  alt={`${product?.name} ${index + 1}`}
                   fill
                   className="object-cover"
                 />
@@ -108,10 +116,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* Product Info */}
       <div className="space-y-6">
         <div>
-          <Badge variant="secondary" className="mb-2">
-            {product.category}
-          </Badge>
-          <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+        
+          <h1 className="text-3xl font-bold mb-2">{product?.name}</h1>
 
           {/* Rating */}
           <div className="flex items-center space-x-2 mb-4">
@@ -120,27 +126,27 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <Star
                   key={i}
                   className={`w-5 h-5 ${
-                    i < Math.floor(product.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                    i < Math.floor(product?.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
                   }`}
                 />
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              {product.rating} ({product.reviews} reviews)
+              {product?.rating} ({product?.reviews} reviews)
             </span>
           </div>
 
           {/* Price */}
           <div className="flex items-center space-x-4 mb-6">
-            <span className="text-3xl font-bold">${product.price}</span>
-            {product.originalPrice && (
-              <span className="text-xl text-muted-foreground line-through">${product.originalPrice}</span>
+            <span className="text-3xl font-bold">${product?.price}</span>
+            {product?.originalPrice && (
+              <span className="text-xl text-muted-foreground line-through">${product?.originalPrice}</span>
             )}
           </div>
 
           {/* Stock Status */}
           <div className="mb-6">
-            {product.inStock ? (
+            {product?.stock!=0 ? (
               <Badge className="bg-green-100 text-green-800">In Stock</Badge>
             ) : (
               <Badge variant="destructive">Out of Stock</Badge>
@@ -175,7 +181,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               className="flex-1"
               size="lg"
               onClick={handleAddToCart}
-              disabled={!product.inStock || isAddingToCart}
+              disabled={(product?.stock==0) || isAddingToCart}
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
               {isAddingToCart ? "Adding..." : "Add to Cart"}
@@ -202,7 +208,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           <TabsContent value="description" className="mt-6">
             <Card>
               <CardContent className="p-6">
-                <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{product?.description}</p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -211,7 +217,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             <Card>
               <CardContent className="p-6">
                 <ul className="space-y-2">
-                  {product.features.map((feature, index) => (
+                  {product?.features.map((feature, index) => (
                     <li key={index} className="flex items-center">
                       <div className="w-2 h-2 bg-primary rounded-full mr-3" />
                       {feature}
