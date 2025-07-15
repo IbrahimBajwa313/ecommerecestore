@@ -16,7 +16,7 @@ export default function HomePage() {
       <Navbar />
       <main>
         <HeroSection />
-        <TrendingProducts />
+        <TrendingProducts /> 
         <CategorySection />
         <NewsletterSection />
       </main>

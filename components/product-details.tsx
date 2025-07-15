@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
+import { usePathname } from "next/navigation"
 
 interface Product {
   stock: number
@@ -29,17 +30,16 @@ interface ProductDetailsProps {
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const { setCart ,cart} = useCart()
+  const { setCart, cart } = useCart()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const pathname = usePathname()
   const { toast } = useToast()
 
-  const handleAddToCart = async () => { 
-    
+  const handleAddToCart = async () => {
     setIsAddingToCart(true)
-   
-    
     try {
       const response = await fetch("/api/cart", {
         method: "POST",
@@ -52,10 +52,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           title: "Added to cart",
           description: `${product?.name} has been added to your cart.`,
         })
-      
-        // Delay resetting cart to false to ensure `cart` is true for a moment
         setTimeout(() => setCart(false), 300)
-      }else {
+      } else {
         throw new Error("Failed to add to cart")
       }
     } catch (error) {
@@ -65,8 +63,24 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         variant: "destructive",
       })
     } finally {
-      console.log('cart is',cart)
       setIsAddingToCart(false)
+    }
+  }
+
+  const handleShare = async () => {
+    try {
+      const url = `${window.location.origin}${pathname}`
+      await navigator.clipboard.writeText(url)
+      toast({
+        title: "Link copied",
+        description: "Product link copied to clipboard!",
+      })
+    } catch (error) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy the product link.",
+        variant: "destructive",
+      })
     }
   }
 
@@ -87,7 +101,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             priority
           />
           {discountPercentage > 0 && (
-            <Badge className="absolute top-4 left-4 bg-red-500 hover:bg-red-600">-{discountPercentage}%</Badge>
+            <Badge className="absolute top-4 left-4 bg-red-500 hover:bg-red-600">
+              -{discountPercentage}%
+            </Badge>
           )}
         </div>
 
@@ -116,7 +132,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
       {/* Product Info */}
       <div className="space-y-6">
         <div>
-        
           <h1 className="text-3xl font-bold mb-2">{product?.name}</h1>
 
           {/* Rating */}
@@ -140,13 +155,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           <div className="flex items-center space-x-4 mb-6">
             <span className="text-3xl font-bold">${product?.price}</span>
             {product?.originalPrice && (
-              <span className="text-xl text-muted-foreground line-through">${product?.originalPrice}</span>
+              <span className="text-xl text-muted-foreground line-through">
+                ${product?.originalPrice}
+              </span>
             )}
           </div>
 
           {/* Stock Status */}
           <div className="mb-6">
-            {product?.stock!=0 ? (
+            {product?.stock !== 0 ? (
               <Badge className="bg-green-100 text-green-800">In Stock</Badge>
             ) : (
               <Badge variant="destructive">Out of Stock</Badge>
@@ -181,15 +198,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               className="flex-1"
               size="lg"
               onClick={handleAddToCart}
-              disabled={(product?.stock==0) || isAddingToCart}
+              disabled={product?.stock === 0 || isAddingToCart}
             >
               <ShoppingCart className="w-5 h-5 mr-2" />
               {isAddingToCart ? "Adding..." : "Add to Cart"}
             </Button>
-            <Button variant="outline" size="lg">
-              <Heart className="w-5 h-5" />
+
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setIsFavorite(!isFavorite)}
+            >
+              <Heart className={`w-5 h-5 ${isFavorite ? "text-red-500 fill-red-500" : ""}`} />
             </Button>
-            <Button variant="outline" size="lg">
+
+            <Button variant="outline" size="lg" onClick={handleShare}>
               <Share2 className="w-5 h-5" />
             </Button>
           </div>

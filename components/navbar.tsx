@@ -88,7 +88,7 @@ export function Navbar() {
           </form>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1 md:space-x-4">
             <ThemeToggle />
 
             {/* Cart */}
