@@ -7,6 +7,7 @@ import { NewsletterSection } from "@/components/newsletter-section"
 import { TopBanner } from "@/components/top_banner"
 // app/layout.js or pages/_app.js
 import '@/styles/globals.css'
+import { FeaturedProducts } from "@/components/featured-products"
 
 
 export default function HomePage() {
@@ -16,7 +17,8 @@ export default function HomePage() {
       <Navbar />
       <main>
         <HeroSection />
-        <TrendingProducts /> 
+        {/* <TrendingProducts />  */}
+        <FeaturedProducts />
         <CategorySection />
         <NewsletterSection />
       </main>
