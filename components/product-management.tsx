@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-
 import type { ReactElement } from "react"
 import { useState, useEffect, useCallback } from "react"
 import { Plus, Search, Edit, Trash2, Eye, Upload, X } from "lucide-react"
@@ -219,7 +218,7 @@ const ProductForm = React.memo<{
                   />
                 </Label>
               </div>
-              <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 5MB each</p>
+              <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB each</p>
             </div>
           </div>
 
@@ -249,7 +248,12 @@ const ProductForm = React.memo<{
             </div>
           )}
 
-          {uploadingImages && <div className="text-center text-sm text-gray-500">Uploading images...</div>}
+          {uploadingImages && (
+            <div className="text-center text-sm text-gray-500 flex items-center justify-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              Uploading images to Cloudinary...
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -379,29 +383,30 @@ export function ProductManagement(): ReactElement {
             continue
           }
 
-          // Validate file size (5MB limit)
-          if (file.size > 5 * 1024 * 1024) {
+          // Validate file size (10MB limit for Cloudinary)
+          if (file.size > 10 * 1024 * 1024) {
             toast({
               title: "Error",
-              description: "Image size should be less than 5MB",
+              description: "Image size should be less than 10MB",
               variant: "destructive",
             })
             continue
           }
 
-          const formData = new FormData()
-          formData.append("file", file)
+          const uploadFormData = new FormData()
+          uploadFormData.append("file", file)
 
-          const response = await fetch("/api/upload-local", {
+          const response = await fetch("/api/upload", {
             method: "POST",
-            body: formData,
-          }) 
+            body: uploadFormData,
+          })
 
           if (response.ok) {
             const data = await response.json()
             uploadedUrls.push(data.url)
           } else {
-            throw new Error("Failed to upload image")
+            const errorData = await response.json()
+            throw new Error(errorData.error || "Failed to upload image")
           }
         }
 
@@ -413,12 +418,13 @@ export function ProductManagement(): ReactElement {
 
         toast({
           title: "Success",
-          description: `${uploadedUrls.length} image(s) uploaded successfully`,
+          description: `${uploadedUrls.length} image(s) uploaded successfully to Cloudinary`,
         })
       } catch (error) {
+        console.error("Upload error:", error)
         toast({
           title: "Error",
-          description: "Failed to upload images",
+          description: error instanceof Error ? error.message : "Failed to upload images",
           variant: "destructive",
         })
       } finally {

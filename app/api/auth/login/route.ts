@@ -1,62 +1,64 @@
 import { type NextRequest, NextResponse } from "next/server"
-import connectDB from "@/lib/mongodb"
-import User from "@/models/User"
-import bcrypt from "bcryptjs"
+import { cookies } from "next/headers"
+
+// Demo users for testing
+const DEMO_USERS = [
+  {
+    id: "1",
+    email: "admin@example.com",
+    password: "admin123",
+    role: "admin",
+    name: "Admin User",
+  },
+  {
+    id: "2",
+    email: "user@example.com",
+    password: "user123",
+    role: "user",
+    name: "Regular User",
+  },
+]
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB()
-
-    // 👇 Create dummy admin if not exists
-    const adminEmail = "admin@example.com"
-    const adminPassword = "Admin123"
-
-    const existingAdmin = await User.findOne({ email: adminEmail })
-    if (!existingAdmin) {
-      const hashed = await bcrypt.hash(adminPassword, 10)
-      await User.create({
-        name: "Admin User",
-        email: adminEmail,
-        password: hashed,
-        role: "admin",
-      })
-      console.log("✅ Dummy admin created:", adminEmail, "/", adminPassword)
-    }
-
     const { email, password } = await request.json()
 
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
-    }
-
-    const user = await User.findOne({ email }).lean()
+    // Find user in demo users
+    const user = DEMO_USERS.find((u) => u.email === email && u.password === password)
 
     if (!user) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if (!isPasswordValid) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
-    }
+    // Create a simple token (in production, use proper JWT)
+    const token = Buffer.from(
+      JSON.stringify({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        exp: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      }),
+    ).toString("base64")
 
-    const tokenData = {
-      userId: user._id,
-      email: user.email,
-      role: user.role,
-      name: user.name,
-    }
-
-    const token = Buffer.from(JSON.stringify(tokenData)).toString("base64")
+    // Set cookie
+    const cookieStore = cookies()
+    cookieStore.set("auth-token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60, // 24 hours
+    })
 
     return NextResponse.json({
+      success: true,
       user: {
-        id: user._id,
+        id: user.id,
         email: user.email,
-        name: user.name,
         role: user.role,
+        name: user.name,
       },
-      token,
+      redirectTo: user.role === "admin" ? "/admin" : "/",
     })
   } catch (error) {
     console.error("Login error:", error)

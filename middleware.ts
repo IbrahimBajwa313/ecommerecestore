@@ -12,14 +12,12 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/auth/login", request.url))
     }
 
-    // In a real app, you would verify the token and check if user is admin
-    // For now, we'll check if it's the admin token
     try {
-      // Simple token validation - in production, use proper JWT verification
+      // Simple token validation (in production, use proper JWT validation)
       const tokenData = JSON.parse(Buffer.from(authToken, "base64").toString())
 
       if (tokenData.role !== "admin") {
-        // Redirect non-admin users to home page
+        // Redirect non-admin users to home
         return NextResponse.redirect(new URL("/", request.url))
       }
     } catch (error) {
