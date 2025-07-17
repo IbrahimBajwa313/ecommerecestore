@@ -44,7 +44,7 @@ export function LoginForm() {
 
         // Redirect based on user role
         if (data.user.role === "admin") {
-          router.push("/admin")
+          router.push("/admin/products")
         } else {
           router.push("/")
         }
