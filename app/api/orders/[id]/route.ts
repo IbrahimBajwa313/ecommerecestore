@@ -7,35 +7,34 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     await connectDB()
 
     const order = await Order.findById(params.id)
-      .populate("user", "name email")
       .populate("items.product", "name images")
-      .lean()
+      .populate("user", "name email")
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 })
     }
 
-    return NextResponse.json(order)
+    return NextResponse.json({ order })
   } catch (error) {
-    console.error("Error fetching order:", error)
-    return NextResponse.json({ error: "Failed to fetch order" }, { status: 500 })
+    console.error("Order fetch error:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectDB()
-    const updates = await request.json()
+    const updateData = await request.json()
 
-    const order = await Order.findByIdAndUpdate(params.id, updates, { new: true })
+    const order = await Order.findByIdAndUpdate(params.id, updateData, { new: true })
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ message: "Order updated successfully", order })
+    return NextResponse.json({ success: true, order })
   } catch (error) {
-    console.error("Error updating order:", error)
-    return NextResponse.json({ error: "Failed to update order" }, { status: 500 })
+    console.error("Order update error:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
