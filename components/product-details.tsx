@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { usePathname } from "next/navigation"
+import { motion } from "framer-motion"
 
 interface Product {
   stock: number
@@ -194,16 +195,29 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </div>
 
           <div className="flex space-x-4">
-            <Button
+            {/* Animated Add to Cart Button */}
+            <motion.div
+              animate={{ x: [0, -4, 0, 4, 0,-4,0] }}
+              transition={{
+                duration: .3,
+                repeat: Infinity,
+                repeatDelay: 5,
+                ease: "linear",
+              }}
               className="flex-1"
-              size="lg"
-              onClick={handleAddToCart}
-              disabled={product?.stock === 0 || isAddingToCart}
             >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              {isAddingToCart ? "Adding..." : "Add to Cart"}
-            </Button>
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={handleAddToCart}
+                disabled={product?.stock === 0 || isAddingToCart}
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                {isAddingToCart ? "Adding..." : "Add to Cart"}
+              </Button>
+            </motion.div>
 
+            {/* Favorite Button */}
             <Button
               variant="outline"
               size="lg"
@@ -212,6 +226,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <Heart className={`w-5 h-5 ${isFavorite ? "text-red-500 fill-red-500" : ""}`} />
             </Button>
 
+            {/* Share Button */}
             <Button variant="outline" size="lg" onClick={handleShare}>
               <Share2 className="w-5 h-5" />
             </Button>

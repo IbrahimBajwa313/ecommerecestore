@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     // For featured products, you might have a featured field or use high ratings
     if (featured === "true") {
-      query.rating = { $gte: 4.5 }
+      query.rating = { $gte: 5 }
     }
 
     const skip = (page - 1) * limit

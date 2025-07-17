@@ -64,3 +64,16 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+@keyframes rotate-smooth-wobble {
+  0% { transform: rotate(0deg); }
+  3% { transform: rotate(20deg); }
+  6% { transform: rotate(-20deg); }
+  9% { transform: rotate(10deg); }
+  12% { transform: rotate(-10deg); }
+  15% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-whatsapp-spin {
+  animation: rotate-smooth-wobble 5s infinite linear;
+}

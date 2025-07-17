@@ -10,18 +10,25 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { motion } from "framer-motion"
 
 export function Navbar() {
   const { cart } = useCart()
-
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [cartItemCount, setCartItemCount] = useState(0)
+  const [showShimmer, setShowShimmer] = useState(false)
   const router = useRouter()
-  
+
   useEffect(() => {
     fetchCartCount()
- 
+
+    const timer = setTimeout(() => {
+      setShowShimmer(true)
+      setTimeout(() => setShowShimmer(false), 1000) // Reset after shimmer
+    }, 3000) // Delay before shimmer
+
+    return () => clearTimeout(timer)
   }, [cart])
 
   const fetchCartCount = async () => {
@@ -48,13 +55,21 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">MS</span>
-            </div>
-            <span className="font-bold text-xl">ModernStore</span>
+        <div className="flex items-center justify-between h-20">
+          {/* Logo with shimmer on first load */}
+          <Link href="/" className="flex items-center">
+          <motion.div
+  className="h-20 w-auto sm:h-24 rounded-lg overflow-hidden flex items-center justify-center"
+  animate={showShimmer ? { rotate: [-2, 2, -1, 1, 0] } : {}}
+  transition={{ duration: 1.2, ease: "easeInOut" }}
+>
+  <img
+    src="/logo.png"
+    alt="ModernStore Logo"
+    className="h-full object-contain"
+  />
+</motion.div>
+
           </Link>
 
           {/* Desktop Navigation */}
@@ -68,8 +83,8 @@ export function Navbar() {
             <Link href="/categories" className="text-foreground hover:text-primary transition-colors">
               Categories
             </Link>
-            <Link href="/about" className="text-foreground hover:text-primary transition-colors">
-              About
+            <Link href="/ourStory" className="text-foreground hover:text-primary transition-colors">
+              Our Story
             </Link>
           </div>
 
@@ -110,7 +125,7 @@ export function Navbar() {
               </Button>
             </Link>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
@@ -143,8 +158,8 @@ export function Navbar() {
               <Link href="/categories" className="text-foreground hover:text-primary transition-colors py-2">
                 Categories
               </Link>
-              <Link href="/about" className="text-foreground hover:text-primary transition-colors py-2">
-                About
+              <Link href="/ourStory" className="text-foreground hover:text-primary transition-colors py-2">
+                Our Story
               </Link>
             </div>
           </div>
