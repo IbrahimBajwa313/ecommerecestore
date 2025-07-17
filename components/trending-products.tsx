@@ -141,4 +141,4 @@ export function TrendingProducts() {
       </div>
     </div>
   )
-}
+} 

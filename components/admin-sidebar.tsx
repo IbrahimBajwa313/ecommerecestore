@@ -3,7 +3,15 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Package, ShoppingCart, Users, BarChart3, Settings, FolderTree } from "lucide-react"
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Users,
+  BarChart3,
+  Settings,
+  FolderTree,
+} from "lucide-react"
 
 const sidebarItems = [
   {
@@ -43,11 +51,22 @@ const sidebarItems = [
   },
 ]
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  onClose?: () => void
+}
+
+export function AdminSidebar({ onClose }: AdminSidebarProps) {
   const pathname = usePathname()
 
+  // Close sidebar only on mobile when a link is clicked
+  const handleNavClick = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      onClose?.()
+    }
+  }
+
   return (
-    <div className="w-64 bg-white dark:bg-gray-800 shadow-md">
+    <div className="w-64 h-full bg-white dark:bg-gray-800 shadow-md">
       <div className="p-6">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white">Admin Panel</h2>
       </div>
@@ -61,6 +80,7 @@ export function AdminSidebar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={handleNavClick}
                 className={cn(
                   "flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors",
                   isActive

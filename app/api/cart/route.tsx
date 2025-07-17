@@ -8,8 +8,6 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB()
 
-    // In a real app, you'd get the user ID from the session
-    // For now, we'll use a mock user ID or session-based cart
     const userId = request.headers.get("user-id") || "guest"
 
     const cart = await Cart.findOne({ user: userId }).populate({
@@ -33,10 +31,8 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB()
     const { productId, quantity = 1 } = await request.json()
-
     const userId = request.headers.get("user-id") || "guest"
 
-    // Check if product exists and has stock
     const product = await Product.findById(productId)
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 })
@@ -47,13 +43,13 @@ export async function POST(request: NextRequest) {
     }
 
     let cart = await Cart.findOne({ user: userId })
-
     if (!cart) {
       cart = new Cart({ user: userId, items: [] })
     }
 
-    // Check if item already exists in cart
-    const existingItemIndex = cart.items.findIndex((item) => item.product.toString() === productId)
+    const existingItemIndex = cart.items.findIndex(
+      (item: { product: any }) => item.product.toString() === productId
+    )
 
     if (existingItemIndex > -1) {
       cart.items[existingItemIndex].quantity += quantity
@@ -75,7 +71,6 @@ export async function PUT(request: NextRequest) {
   try {
     await connectDB()
     const { itemId, quantity } = await request.json()
-
     const userId = request.headers.get("user-id") || "guest"
 
     const cart = await Cart.findOne({ user: userId })
@@ -83,7 +78,10 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 })
     }
 
-    const itemIndex = cart.items.findIndex((item) => item._id.toString() === itemId)
+    const itemIndex = cart.items.findIndex(
+      (item: { _id: any }) => item._id.toString() === itemId
+    )
+
     if (itemIndex === -1) {
       return NextResponse.json({ error: "Item not found in cart" }, { status: 404 })
     }
@@ -98,12 +96,11 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Remove item from cart
+// DELETE - Remove item from cart or clear entire cart
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB()
-    const { itemId } = await request.json()
-
+    const { itemId, clearAll } = await request.json()
     const userId = request.headers.get("user-id") || "guest"
 
     const cart = await Cart.findOne({ user: userId })
@@ -111,12 +108,21 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Cart not found" }, { status: 404 })
     }
 
-    cart.items = cart.items.filter((item) => item._id.toString() !== itemId)
+    if (clearAll) {
+      cart.items = []
+    } else if (itemId) {
+      cart.items = cart.items.filter(
+        (item: { _id: any }) => item._id.toString() !== itemId
+      )
+    } else {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+    }
+
     await cart.save()
 
-    return NextResponse.json({ message: "Item removed from cart", cart })
+    return NextResponse.json({ message: "Cart updated", cart })
   } catch (error) {
     console.error("Error removing from cart:", error)
-    return NextResponse.json({ error: "Failed to remove from cart" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to update cart" }, { status: 500 })
   }
 }

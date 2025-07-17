@@ -1,9 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Bell, Search, Settings, User, LogOut } from "lucide-react"
+import { Bell, Search, LogOut, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -18,7 +17,11 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useAuth } from "@/components/auth-provider"
 
-export function AdminHeader() {
+interface AdminHeaderProps {
+  onToggleSidebar?: () => void
+}
+
+export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
   const { user, logout } = useAuth()
@@ -29,23 +32,35 @@ export function AdminHeader() {
   }
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
       <div className="flex items-center justify-between">
-        {/* Left - Search */}
+        {/* Left: Menu toggle + search */}
         <div className="flex items-center space-x-4 flex-1">
-          <div className="relative max-w-md">
+          {onToggleSidebar && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={onToggleSidebar}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
+
+          {/* Search */}
+          <div className="relative hidden sm:block">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               type="search"
               placeholder="Search orders, products, customers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-80"
+              className="pl-10 w-72"
             />
           </div>
         </div>
 
-        {/* Right - Icons & Menu */}
+        {/* Right: Theme, Notifications, User */}
         <div className="flex items-center space-x-4">
           <ThemeToggle />
 
@@ -56,7 +71,6 @@ export function AdminHeader() {
                 <Bell className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            {/* Notifications content can be added here if needed */}
           </DropdownMenu>
 
           {/* User Menu */}
@@ -83,23 +97,6 @@ export function AdminHeader() {
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
-
-              {/* <DropdownMenuItem asChild>
-                <Link href="/profile" className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem> */}
-
-              {/* <DropdownMenuItem asChild>
-                <Link href="/settings" className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
-              </DropdownMenuItem> */}
-
-              <DropdownMenuSeparator />
-
               <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>

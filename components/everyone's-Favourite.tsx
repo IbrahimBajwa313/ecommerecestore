@@ -54,7 +54,7 @@ export function EveryonesFavourite() {
         >
           <motion.h2
             initial={{ x: 0 }}
-            animate={{ x: clicked ? -20 : 0 }}
+            animate={{ x: clicked ? -10 : 0 }}
             transition={{ duration: 1.3, ease: "linear" }}
             className="text-2xl md:text-3xl font-black flex items-center gap-2 text-black dark:text-white"
           >

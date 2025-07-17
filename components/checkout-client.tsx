@@ -96,6 +96,13 @@ export function CheckoutClient() {
       if (res.ok) {
         alert("Order placed successfully!")
         window.location.href = "/thank-you"
+        await fetch("/api/cart", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json", "user-id": "guest" },
+          body: JSON.stringify({ clearAll: true }),
+        })
+        
+        
       } else {
         const error = await res.json()
         console.error("Order error:", error)

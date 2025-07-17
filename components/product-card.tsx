@@ -82,7 +82,7 @@ export function ProductCard({ product }: ProductCardProps)
                 height={300}
                 className="w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-110"
               />
-            </div>
+            </div> 
           </Link>
 
           {product.badge && (
