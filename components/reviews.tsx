@@ -36,7 +36,6 @@ export function WhatsappReviewSection() {
 
   const [activeImage, setActiveImage] = useState<string | null>(null)
 
-  // Disable scroll when modal is open
   useEffect(() => {
     if (activeImage) {
       document.body.style.overflow = "hidden"
@@ -49,8 +48,8 @@ export function WhatsappReviewSection() {
   }, [activeImage])
 
   return (
-    <section className="w-full px-4 py-10 md:py-14 bg-white relative z-0">
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-6">
+    <section className="w-full px-4 py-10 md:py-14 bg-white dark:bg-gray-900 relative z-0">
+      <h2 className="text-2xl md:text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">
         What Our Customers Say
       </h2>
 
@@ -63,7 +62,7 @@ export function WhatsappReviewSection() {
             >
               <div
                 onClick={() => setActiveImage(src)}
-                className="w-[220px] h-[340px] md:w-[240px] md:h-[320px] lg:w-[260px] lg:h-[300px] bg-white rounded-xl overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition"
+                className="w-[220px] h-[340px] md:w-[240px] md:h-[320px] lg:w-[260px] lg:h-[300px] bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md dark:shadow-lg cursor-pointer hover:shadow-lg dark:hover:shadow-xl transition"
               >
                 <Image
                   src={src}
@@ -79,16 +78,16 @@ export function WhatsappReviewSection() {
 
         {/* Navigation Arrows */}
         <button
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow hover:bg-gray-100 transition"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800/90 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           onClick={() => instanceRef.current?.prev()}
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-white" />
         </button>
         <button
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow hover:bg-gray-100 transition"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800/90 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           onClick={() => instanceRef.current?.next()}
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-5 h-5 text-gray-700 dark:text-white" />
         </button>
       </div>
 
@@ -103,7 +102,7 @@ export function WhatsappReviewSection() {
             onClick={() => setActiveImage(null)}
           >
             <motion.div
-              className="relative max-w-[70%] max-h-[70vh] w-auto h-auto"
+              className="relative max-w-[90%] max-h-[90vh] w-auto h-auto"
               initial={{ scale: 0.85 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.85 }}
@@ -116,11 +115,9 @@ export function WhatsappReviewSection() {
                 height={1400}
                 className="w-full h-full object-contain rounded-xl shadow-xl"
               />
-
-              {/* Prominent Close Button */}
               <button
                 onClick={() => setActiveImage(null)}
-                className="absolute -top-4 -right-4 md:top-4 md:right-4 bg-white text-gray-800 p-3 rounded-full shadow-xl hover:bg-red-500 hover:text-white transition-all z-[101]"
+                className="absolute -top-4 -right-4 md:top-4 md:right-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-3 rounded-full shadow-xl hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all z-[101]"
                 aria-label="Close"
               >
                 <X className="w-6 h-6" />

@@ -22,7 +22,7 @@ export function EveryonesFavourite() {
     try {
       const res = await fetch("/api/products")
       const data = await res.json()
-      const favourites: Product[] = data.products.slice(5, 7)
+      const favourites: Product[] = data.products.slice(1, 3)
       setProducts(favourites)
     } catch (err) {
       console.error("Failed to load favourite deals", err)
@@ -67,7 +67,7 @@ export function EveryonesFavourite() {
         {!clicked && (
           <motion.div
             onClick={handleClick}
-            className="text-lg font-medium text-gray-700 dark:text-gray-300 text-center cursor-pointer mb-10"
+            className="text-base md:text-lg font-medium text-gray-700 dark:text-gray-300 text-center cursor-pointer mb-10"
             animate={{ backgroundPosition: ["-200% 0", "200% 0"] }}
             transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
             style={{
@@ -85,7 +85,7 @@ export function EveryonesFavourite() {
         <AnimatePresence>
           {clicked ? (
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4"
+              className="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-4"
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
@@ -95,7 +95,7 @@ export function EveryonesFavourite() {
                 [...Array(2)].map((_, index) => (
                   <div
                     key={index}
-                    className="rounded-xl bg-gray-200 dark:bg-gray-700 h-72 animate-pulse blur-sm"
+                    className="rounded-lg bg-gray-200 dark:bg-gray-700 h-60 animate-pulse blur-sm"
                   />
                 ))
               ) : (
@@ -103,7 +103,7 @@ export function EveryonesFavourite() {
                   <Link
                     key={product._id}
                     href={`/products/${product._id}`}
-                    className="group block rounded-xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden bg-white dark:bg-zinc-900"
+                    className="group block rounded-lg shadow-sm hover:shadow-md transition duration-300 overflow-hidden bg-white dark:bg-zinc-900"
                   >
                     <div className="relative w-full aspect-[4/3] overflow-hidden">
                       <Image
@@ -113,11 +113,13 @@ export function EveryonesFavourite() {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 truncate">
+                    <div className="p-3">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                         {product.name}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">${product.price}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                        ${product.price}
+                      </p>
                     </div>
                   </Link>
                 ))
@@ -126,7 +128,7 @@ export function EveryonesFavourite() {
           ) : (
             <motion.div
               key="spacer"
-              className="h-[300px] w-full"
+              className="h-[250px] w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
