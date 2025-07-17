@@ -3,22 +3,25 @@
 import { useEffect, useState } from "react"
 import "keen-slider/keen-slider.min.css"
 import { useKeenSlider } from "keen-slider/react"
-import Image from "next/image"
-import Link from "next/link"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ProductCard } from "@/components/product-card"
 
 interface Product {
   _id: string
   name: string
   price: number
+  originalPrice?: number
   createdAt: string
   images: string[]
+  rating: number
+  reviewCount: number
 }
 
 export function TrendingProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loaded, setLoaded] = useState(false)
+
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     slides: {
       perView: 2,
@@ -42,7 +45,7 @@ export function TrendingProducts() {
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const res = await fetch("/api/products")
+        const res = await fetch("/api/products?featured=true")
         const data = await res.json()
 
         const trending: Product[] = data.products
@@ -64,14 +67,12 @@ export function TrendingProducts() {
     return (
       <div className="py-8 w-full flex justify-center">
         <div className="relative w-full max-w-6xl px-4">
-          <h2 className="text-xl md:text-2xl font-bold mb-4">Trending Now</h2>
+          <h2 className="text-2xl md:text-3xl font-black mb-6 flex items-center gap-2">
+            <span role="img" aria-label="fire">🔥</span> Trending Now
+          </h2>
           <div className="flex overflow-x-auto pb-4 gap-[15px] md:gap-[20px] lg:gap-[24px]">
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="min-w-[180px] md:min-w-[200px] lg:min-w-[220px] flex-shrink-0">
-                <div className="bg-gray-200 rounded-lg w-full h-64 animate-pulse blur-sm" />
-                <div className="mt-3 bg-gray-200 rounded w-3/4 h-4 animate-pulse blur-sm" />
-                <div className="mt-2 bg-gray-200 rounded w-1/2 h-4 animate-pulse blur-sm" />
-              </div>
+              <div key={index} className="min-w-[260px] h-[420px] bg-gray-200 rounded-lg animate-pulse blur-sm" />
             ))}
           </div>
         </div>
@@ -83,54 +84,57 @@ export function TrendingProducts() {
 
   return (
     <div className="py-8 w-full flex justify-center">
-      <div className="relative w-full max-w-6xl px-4 group">
-        <h2 className="text-xl md:text-2xl font-bold mb-4">Trending Now</h2>
+      <div className="relative w-full max-w-6xl px-4">
+        <h2 className="text-2xl md:text-3xl font-black mb-6 flex items-center gap-2">
+          <span role="img" aria-label="fire">🔥</span> Trending Now
+        </h2>
 
         {/* Arrows */}
         {loaded && (
           <>
             <button
               onClick={() => slider.current?.prev()}
-              className="absolute left-0 top-1/2 z-10 -translate-y-1/2 bg-gray-800/60 hover:bg-white hover:text-black text-white p-2 rounded-md hidden group-hover:block transition"
+              className="absolute left-0 top-1/2 z-10 -translate-y-1/2 bg-gray-800/60 hover:bg-white hover:text-black text-white p-2 rounded-md hidden lg:group-hover:block transition"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
 
             <button
               onClick={() => slider.current?.next()}
-              className="absolute right-0 top-1/2 z-10 -translate-y-1/2 bg-gray-800/60 hover:bg-white hover:text-black text-white p-2 rounded-md hidden group-hover:block transition"
+              className="absolute right-0 top-1/2 z-10 -translate-y-1/2 bg-gray-800/60 hover:bg-white hover:text-black text-white p-2 rounded-md hidden lg:group-hover:block transition"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
           </>
         )}
 
-        {/* Slider */}
-        <div
-          ref={sliderRef}
-          className="keen-slider cursor-grab active:cursor-grabbing"
-        >
+        {/* Product Slider */}
+        <div ref={sliderRef} className="keen-slider">
           {products.map((product, index) => (
             <div
               key={product._id}
-              className="keen-slider__slide relative rounded-lg overflow-hidden"
-              style={{ maxWidth: "220px" }}
+              className="keen-slider__slide group"
+              style={{ minWidth: "260px", maxWidth: "260px", height: "100%" }}
             >
-              <Link href={`/product/${product._id}`}>
-                <div className="relative w-full h-64 rounded-md overflow-hidden">
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    fill
-                    className="object-cover rounded-md"
-                  />
-                </div>
-
-                {/* Number Badge */}
-                <div className="absolute bottom-2 left-2 bg-black/70 text-white text-3xl font-bold px-3 rounded-md">
+              <div className="relative">
+                {/* Netflix-style rank number */}
+                <div className="absolute top-2 left-2 z-10 text-white font-extrabold text-4xl drop-shadow-lg mix-blend-difference pointer-events-none">
                   {index + 1}
                 </div>
-              </Link>
+
+                {/* Card content (unrestricted) */}
+                <ProductCard
+                  product={{
+                    id: product._id,
+                    name: product.name,
+                    price: product.price,
+                    originalPrice: product.originalPrice,
+                    image: product.images[0],
+                    rating: product.rating,
+                    reviews: product.reviewCount,
+                  }}
+                />
+              </div>
             </div>
           ))}
         </div>
