@@ -148,7 +148,11 @@ export function CartContent() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => updateQuantity(item._id, item.quantity - 1)}
+          onClick={() => {
+            setCart(true)
+            setTimeout(() => setCart(false), 300)
+            updateQuantity(item._id, item.quantity - 1)
+          }}
           disabled={item.quantity <= 1}
         >
           <Minus className="h-4 w-4" />
@@ -166,7 +170,12 @@ export function CartContent() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => updateQuantity(item._id, item.quantity + 1)}
+          onClick={() =>{ 
+            setCart(true)
+            setTimeout(() => setCart(false), 300)
+            updateQuantity(item._id, item.quantity + 1)
+          
+          }}
           disabled={item.quantity >= item.product?.stock}
         >
           <Plus className="h-4 w-4" />

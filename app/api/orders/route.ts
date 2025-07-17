@@ -1,44 +1,84 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import connectDB from "@/lib/mongodb"
 import Order from "@/models/Order"
+import { v4 as uuidv4 } from "uuid"
 
-export async function GET(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     await connectDB()
 
-    const { searchParams } = new URL(request.url)
-    const page = Number.parseInt(searchParams.get("page") || "1")
-    const limit = Number.parseInt(searchParams.get("limit") || "10")
-    const status = searchParams.get("status")
+    const body = await req.json()
+    const {
+      items,
+      address,
+      subtotal,
+      tax,
+      shipping,
+      total,
+      notes,
+    } = body
 
-    // Build query
-    const query: any = {}
-    if (status && status !== "all") {
-      query.orderStatus = status
+    // ✅ Validate items
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: "No items provided." }, { status: 400 })
     }
 
-    const skip = (page - 1) * limit
+    // ✅ Validate address
+    if (
+      !address ||
+      !address.fullName ||
+      !address.phoneNumber ||
+      !address.street ||
+      !address.city ||
+      !address.zipCode
+    ) {
+      return NextResponse.json({ error: "Incomplete address information." }, { status: 400 })
+    }
 
-    const orders = await Order.find(query)
-      .populate("user", "name email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean()
+    // ✅ Validate pricing fields
+    if (
+      typeof subtotal !== "number" ||
+      typeof tax !== "number" ||
+      typeof shipping !== "number" ||
+      typeof total !== "number"
+    ) {
+      return NextResponse.json({ error: "Invalid price calculations." }, { status: 400 })
+    }
 
-    const total = await Order.countDocuments(query)
+    // ✅ Generate unique order number (e.g., MS-5F3A9C)
+    const orderNumber = `MS-${uuidv4().split("-")[0].toUpperCase()}`
 
-    return NextResponse.json({
-      orders,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
-      },
+    // ✅ Create and save order
+    const newOrder = await Order.create({
+      orderNumber,
+      items,
+      address,
+      subtotal,
+      tax,
+      shipping,
+      total,
+      notes,
+      paymentMethod: "cod",
+      paymentStatus: "pending",
+      orderStatus: "pending",
     })
+
+    return NextResponse.json({ success: true, order: newOrder }, { status: 201 })
+  } catch (error) {
+    console.error("Error creating order:", error)
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  }
+}
+
+export async function GET() {
+  try {
+    await connectDB()
+
+    const orders = await Order.find().sort({ createdAt: -1 })
+
+    return NextResponse.json({ success: true, orders }, { status: 200 })
   } catch (error) {
     console.error("Error fetching orders:", error)
-    return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 })
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }

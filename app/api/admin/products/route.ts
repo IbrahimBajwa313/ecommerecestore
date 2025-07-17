@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       features: productData.features || [],
       tags: productData.tags || [],
       specifications: productData.specifications || {},
-      rating: 0,
+      rating: productData.rating,
       reviewCount: 0,
     })
 

@@ -30,6 +30,7 @@ interface Product {
   name: string
   description: string
   price: number
+  rating: number
   originalPrice?: number
   category: {
     _id: string
@@ -53,6 +54,7 @@ interface ProductFormData {
   name: string
   description: string
   price: string
+  rating:string
   originalPrice: string
   category: string
   stock: string
@@ -156,6 +158,19 @@ const ProductForm = React.memo<{
               onChange={handleInputChange("originalPrice")}
             />
           </div>
+          <div className="space-y-2">
+    <Label htmlFor={`${isEdit ? "edit-" : ""}rating`}>Rating (1–5)</Label>
+    <Input
+      id={`${isEdit ? "edit-" : ""}rating`}
+      type="number"
+      min={1}
+      max={5}
+      step="1"
+      value={formData.rating}
+      onChange={handleInputChange("rating")}
+      required
+    />
+  </div>
           <div className="space-y-2">
             <Label htmlFor={`${isEdit ? "edit-" : ""}stock`}>Stock</Label>
             <Input
@@ -311,6 +326,7 @@ export function ProductManagement(): ReactElement {
     features: "",
     tags: "",
     images: [],
+    rating:'4'
   })
 
   const fetchProducts = useCallback(async () => {
@@ -357,6 +373,7 @@ export function ProductManagement(): ReactElement {
       features: "",
       tags: "",
       images: [],
+      rating:'4'
     })
   }, [])
 
@@ -446,6 +463,7 @@ export function ProductManagement(): ReactElement {
           price: Number.parseFloat(formData.price),
           originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
           stock: Number.parseInt(formData.stock),
+          rating: parseFloat(formData.rating),
           features: formData.features
             .split(",")
             .map((f) => f.trim())
@@ -500,6 +518,7 @@ export function ProductManagement(): ReactElement {
           price: Number.parseFloat(formData.price),
           originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
           stock: Number.parseInt(formData.stock),
+          rating: parseFloat(formData.rating),
           features: formData.features
             .split(",")
             .map((f) => f.trim())
@@ -585,6 +604,7 @@ export function ProductManagement(): ReactElement {
       features: product.features.join(", "),
       tags: product.tags.join(", "),
       images: product.images,
+      rating: product.rating?.toString() || "4", // <- Add this
     })
     setIsEditDialogOpen(true)
   }, [])

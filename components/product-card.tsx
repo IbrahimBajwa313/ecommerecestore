@@ -124,7 +124,7 @@ export function ProductCard({ product }: ProductCardProps)
               ))}
             </div>
             <span className="text-sm text-muted-foreground transition-opacity duration-300 group-hover:opacity-80">
-              ({product.reviews})
+              ({product.rating})
             </span>
           </div>
 

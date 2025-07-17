@@ -61,9 +61,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         features: productData.features || [],
         tags: productData.tags || [],
         specifications: productData.specifications || {},
+        rating: productData.rating, // ✅ this was missing!
       },
       { new: true },
-    ).populate("category", "name slug")
+    )
+    .populate("category", "name slug")
 
     if (!updatedProduct) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 })

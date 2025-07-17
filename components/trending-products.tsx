@@ -19,6 +19,7 @@ export function TrendingProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loaded, setLoaded] = useState(false)
+
   const [sliderRef, slider] = useKeenSlider<HTMLDivElement>({
     slides: {
       perView: 2,
@@ -42,7 +43,7 @@ export function TrendingProducts() {
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const res = await fetch("/api/products")
+        const res = await fetch("/api/products?featured=true")
         const data = await res.json()
 
         const trending: Product[] = data.products
@@ -64,11 +65,13 @@ export function TrendingProducts() {
     return (
       <div className="py-8 w-full flex justify-center">
         <div className="relative w-full max-w-6xl px-4">
-          <h2 className="text-xl md:text-2xl font-bold mb-4">Trending Now</h2>
+          <h2 className="text-2xl md:text-3xl font-black mb-6 flex items-center gap-2">
+            <span role="img" aria-label="fire">🔥</span> Trending Now
+          </h2>
           <div className="flex overflow-x-auto pb-4 gap-[15px] md:gap-[20px] lg:gap-[24px]">
             {[...Array(4)].map((_, index) => (
-              <div key={index} className="min-w-[180px] md:min-w-[200px] lg:min-w-[220px] flex-shrink-0">
-                <div className="bg-gray-200 rounded-lg w-full h-64 animate-pulse blur-sm" />
+              <div key={index} className="min-w-[220px] md:min-w-[240px] lg:min-w-[260px] flex-shrink-0">
+                <div className="bg-gray-200 rounded-lg w-full h-80 animate-pulse blur-sm" />
                 <div className="mt-3 bg-gray-200 rounded w-3/4 h-4 animate-pulse blur-sm" />
                 <div className="mt-2 bg-gray-200 rounded w-1/2 h-4 animate-pulse blur-sm" />
               </div>
@@ -84,7 +87,9 @@ export function TrendingProducts() {
   return (
     <div className="py-8 w-full flex justify-center">
       <div className="relative w-full max-w-6xl px-4 group">
-        <h2 className="text-xl md:text-2xl font-bold mb-4">Trending Now</h2>
+        <h2 className="text-2xl md:text-3xl font-black mb-6 flex items-center gap-2">
+          <span role="img" aria-label="fire">🔥</span> Trending Now
+        </h2>
 
         {/* Arrows */}
         {loaded && (
@@ -114,21 +119,21 @@ export function TrendingProducts() {
             <div
               key={product._id}
               className="keen-slider__slide relative rounded-lg overflow-hidden"
-              style={{ maxWidth: "220px" }}
+              style={{ maxWidth: "260px" }}
             >
-              <Link href={`/product/${product._id}`}>
-                <div className="relative w-full h-64 rounded-md overflow-hidden">
+              <Link href={`/products/${product._id}`}>
+                <div className="relative w-full h-80 rounded-md overflow-hidden">
                   <Image
                     src={product.images[0]}
                     alt={product.name}
                     fill
-                    className="object-cover rounded-md"
+                    className="object-cover rounded-md transition-transform duration-300 group-hover:scale-[1.02]"
                   />
-                </div>
 
-                {/* Number Badge */}
-                <div className="absolute bottom-2 left-2 bg-black/70 text-white text-3xl font-bold px-3 rounded-md">
-                  {index + 1}
+                  {/* Netflix-style Number Badge */}
+                  <div className="absolute left-2 top-2 z-10 text-white font-extrabold text-[4rem] leading-none drop-shadow-sm mix-blend-difference pointer-events-none select-none">
+                    {index + 1}
+                  </div>
                 </div>
               </Link>
             </div>
