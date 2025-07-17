@@ -47,6 +47,7 @@
     "embla-carousel-react": "8.5.1",
     "framer-motion": "^12.23.5",
     "input-otp": "1.4.1",
+    "jsonwebtoken": "^9.0.2",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.454.0",
     "mongoose": "latest",

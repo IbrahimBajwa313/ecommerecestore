@@ -4,24 +4,20 @@ import type { NextRequest } from "next/server"
 export function middleware(request: NextRequest) {
   // Check if the request is for admin routes
   if (request.nextUrl.pathname.startsWith("/admin")) {
-    // Get the auth token from cookies
-    const authToken = request.cookies.get("auth-token")?.value
+    const token = request.cookies.get("auth-token")?.value
 
-    if (!authToken) {
-      // Redirect to login if no token
+    if (!token) {
       return NextResponse.redirect(new URL("/auth/login", request.url))
     }
 
     try {
       // Simple token validation (in production, use proper JWT validation)
-      const tokenData = JSON.parse(Buffer.from(authToken, "base64").toString())
+      const payload = JSON.parse(atob(token.split(".")[1]))
 
-      if (tokenData.role !== "admin") {
-        // Redirect non-admin users to home
+      if (payload.role !== "admin") {
         return NextResponse.redirect(new URL("/", request.url))
       }
     } catch (error) {
-      // Invalid token, redirect to login
       return NextResponse.redirect(new URL("/auth/login", request.url))
     }
   }

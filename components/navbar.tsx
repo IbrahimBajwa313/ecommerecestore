@@ -1,28 +1,34 @@
 "use client"
 
 import type React from "react"
-import { useCart } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ShoppingCart, User, Search, Menu, X } from "lucide-react"
+import { ShoppingCart, User, Search, Menu, X, LogOut, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useAuth } from "@/components/auth-provider"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function Navbar() {
-  const { cart } = useCart()
-
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [cartItemCount, setCartItemCount] = useState(0)
+  const { user, logout } = useAuth()
   const router = useRouter()
-  
+
   useEffect(() => {
     fetchCartCount()
- 
-  }, [cart])
+  }, [])
 
   const fetchCartCount = async () => {
     try {
@@ -43,6 +49,11 @@ export function Navbar() {
     if (searchQuery.trim()) {
       router.push(`/products?search=${encodeURIComponent(searchQuery)}`)
     }
+  }
+
+  const handleLogout = async () => {
+    await logout()
+    router.push("/")
   }
 
   return (
@@ -88,7 +99,7 @@ export function Navbar() {
           </form>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-1 md:space-x-4">
+          <div className="flex items-center space-x-4">
             <ThemeToggle />
 
             {/* Cart */}
@@ -104,11 +115,49 @@ export function Navbar() {
             </Link>
 
             {/* User Account */}
-            <Link href="/auth/login">
-              <Button variant="ghost" size="icon">
-                <User className="w-5 h-5" />
-              </Button>
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Profile Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  {user.role === "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/auth/login">
+                <Button variant="ghost" size="icon">
+                  <User className="w-5 h-5" />
+                </Button>
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -146,6 +195,25 @@ export function Navbar() {
               <Link href="/about" className="text-foreground hover:text-primary transition-colors py-2">
                 About
               </Link>
+
+              {user && (
+                <>
+                  <Link href="/profile" className="text-foreground hover:text-primary transition-colors py-2">
+                    Profile Settings
+                  </Link>
+                  {user.role === "admin" && (
+                    <Link href="/admin/products" className="text-foreground hover:text-primary transition-colors py-2">
+                      Admin Panel
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="text-red-600 hover:text-red-700 transition-colors py-2 text-left"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
