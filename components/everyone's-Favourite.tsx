@@ -20,10 +20,10 @@ export function EveryonesFavourite() {
   const fetchFavouriteDeals = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/products")
+      const res = await fetch("/api/products?category=everyone-s-favourite")
       const data = await res.json()
-      const favourites: Product[] = data.products.slice(1, 3)
-      setProducts(favourites)
+      const favourites: Product[] = data.product
+      setProducts(data.products)
     } catch (err) {
       console.error("Failed to load favourite deals", err)
     } finally {
@@ -92,14 +92,14 @@ export function EveryonesFavourite() {
               transition={{ duration: 0.6 }}
             >
               {isLoading ? (
-                [...Array(2)].map((_, index) => (
+                [...Array(2)]?.map((_, index) => (
                   <div
                     key={index}
                     className="rounded-lg bg-gray-200 dark:bg-gray-700 h-60 animate-pulse blur-sm"
                   />
                 ))
               ) : (
-                products.map((product) => (
+                products?.map((product) => (
                   <Link
                     key={product._id}
                     href={`/products/${product._id}`}

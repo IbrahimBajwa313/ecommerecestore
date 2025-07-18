@@ -1,4 +1,5 @@
 "use client"
+
 import { useCart } from "@/context/cart-context"
 import { useState } from "react"
 import Image from "next/image"
@@ -11,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
+import Cookies from "js-cookie"
 
 interface Product {
   stock: number
@@ -31,7 +33,7 @@ interface ProductDetailsProps {
 }
 
 export function ProductDetails({ product }: ProductDetailsProps) {
-  const { setCart, cart } = useCart()
+  const { setCart } = useCart()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
@@ -42,21 +44,34 @@ export function ProductDetails({ product }: ProductDetailsProps) {
   const handleAddToCart = async () => {
     setIsAddingToCart(true)
     try {
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product?._id, quantity }),
-      })
-      if (response.ok) {
-        setCart(true)
-        toast({
-          title: "Added to cart",
-          description: `${product?.name} has been added to your cart.`,
-        })
-        setTimeout(() => setCart(false), 300)
+      const existing = Cookies.get("cart")
+      const cart = existing ? JSON.parse(existing) : []
+
+      const foundIndex = cart.findIndex((item: any) => item.product.id === product._id)
+
+      if (foundIndex !== -1) {
+        cart[foundIndex].quantity += quantity
       } else {
-        throw new Error("Failed to add to cart")
+        cart.push({
+          product: {
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            image: product.images[0] || "/placeholder.svg",
+            stock: product.stock
+          },
+          quantity,
+          addedAt: new Date().toISOString()
+        })
       }
+
+      Cookies.set("cart", JSON.stringify(cart), { expires: 7 })
+      setCart(true)
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+      })
+      setTimeout(() => setCart(false), 300)
     } catch (error) {
       toast({
         title: "Error",
@@ -135,7 +150,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <div>
           <h1 className="text-3xl font-bold mb-2">{product?.name}</h1>
 
-          {/* Rating */}
           <div className="flex items-center space-x-2 mb-4">
             <div className="flex items-center">
               {[...Array(5)].map((_, i) => (
@@ -152,17 +166,15 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </span>
           </div>
 
-          {/* Price */}
           <div className="flex items-center space-x-4 mb-6">
-            <span className="text-3xl font-bold">${product?.price}</span>
+            <span className="text-3xl font-bold">Rs.{product?.price}</span>
             {product?.originalPrice && (
               <span className="text-xl text-muted-foreground line-through">
-                ${product?.originalPrice}
+                Rs.{product?.originalPrice}
               </span>
             )}
           </div>
 
-          {/* Stock Status */}
           <div className="mb-6">
             {product?.stock !== 0 ? (
               <Badge className="bg-green-100 text-green-800">In Stock</Badge>
@@ -174,7 +186,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
         <Separator />
 
-        {/* Quantity and Add to Cart */}
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
             <span className="font-medium">Quantity:</span>
@@ -188,18 +199,21 @@ export function ProductDetails({ product }: ProductDetailsProps) {
                 <Minus className="h-4 w-4" />
               </Button>
               <span className="w-12 text-center font-medium">{quantity}</span>
-              <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setQuantity(quantity + 1)}
+              >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
           </div>
 
           <div className="flex space-x-4">
-            {/* Animated Add to Cart Button */}
             <motion.div
-              animate={{ x: [0, -4, 0, 4, 0,-4,0] }}
+              animate={{ x: [0, -4, 0, 4, 0, -4, 0] }}
               transition={{
-                duration: .3,
+                duration: 0.3,
                 repeat: Infinity,
                 repeatDelay: 5,
                 ease: "linear",
@@ -217,7 +231,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </Button>
             </motion.div>
 
-            {/* Favorite Button */}
             <Button
               variant="outline"
               size="lg"
@@ -226,7 +239,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               <Heart className={`w-5 h-5 ${isFavorite ? "text-red-500 fill-red-500" : ""}`} />
             </Button>
 
-            {/* Share Button */}
             <Button variant="outline" size="lg" onClick={handleShare}>
               <Share2 className="w-5 h-5" />
             </Button>
@@ -235,7 +247,6 @@ export function ProductDetails({ product }: ProductDetailsProps) {
 
         <Separator />
 
-        {/* Product Details Tabs */}
         <Tabs defaultValue="description" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="description">Description</TabsTrigger>

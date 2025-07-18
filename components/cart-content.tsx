@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useCart } from "@/context/cart-context"
+import Cookies from "js-cookie"
 import Image from "next/image"
 import Link from "next/link"
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
@@ -11,19 +12,19 @@ import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 
 interface CartItem {
-  _id: string
   product: {
-    _id: string
+    id: string
     name: string
     price: number
-    images: string[]
+    image: string
     stock: number
   }
   quantity: number
+  addedAt: string
 }
 
 export function CartContent() {
-  const { setCart, cart } = useCart()
+  const { setCart } = useCart()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -31,58 +32,41 @@ export function CartContent() {
     fetchCartItems()
   }, [])
 
-  const fetchCartItems = async () => {
+  const fetchCartItems = () => {
     try {
-      const response = await fetch("/api/cart")
-      if (response.ok) {
-        const data = await response.json()
-        setCartItems(data.items || [])
-      }
+      const cookie = Cookies.get("cart")
+      const parsed = cookie ? JSON.parse(cookie) : []
+      setCartItems(parsed)
     } catch (error) {
-      console.error("Error fetching cart:", error)
+      console.error("Failed to read cart from cookies", error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const updateQuantity = async (itemId: string, newQuantity: number) => {
+  const saveToCookies = (updatedCart: CartItem[]) => {
+    Cookies.set("cart", JSON.stringify(updatedCart), { expires: 7 })
+    setCartItems(updatedCart)
+  }
+
+  const updateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) return
-    try {
-      const response = await fetch("/api/cart", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId, quantity: newQuantity }),
-      })
-
-      if (response.ok) {
-        setCartItems((items) =>
-          items.map((item) => (item._id === itemId ? { ...item, quantity: newQuantity } : item))
-        )
-      }
-    } catch (error) {
-      console.error("Error updating quantity:", error)
-    }
+    const updated = cartItems.map((item) =>
+      item.product.id === productId
+        ? { ...item, quantity: newQuantity }
+        : item
+    )
+    saveToCookies(updated)
   }
 
-  const removeItem = async (itemId: string) => {
-    try {
-      const response = await fetch("/api/cart", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ itemId }),
-      })
-
-      if (response.ok) {
-        setCart(true)
-        setCartItems((items) => items.filter((item) => item._id !== itemId))
-        setTimeout(() => setCart(false), 300)
-      }
-    } catch (error) {
-      console.error("Error removing item:", error)
-    }
+  const removeItem = (productId: string) => {
+    const updated = cartItems.filter((item) => item.product.id !== productId)
+    setCart(true)
+    saveToCookies(updated)
+    setTimeout(() => setCart(false), 300)
   }
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.product?.price * item.quantity, 0)
+  const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
   const tax = subtotal * 0.08
   const shipping = subtotal > 100 ? 0 : 9.99
   const total = subtotal + tax + shipping
@@ -112,96 +96,80 @@ export function CartContent() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 px-4 md:px-6">
       {/* Cart Items */}
       <div className="lg:col-span-2 space-y-4">
-        {cartItems.map((item) => (
-          <Card key={item._id}>
-           <CardContent className="p-4 md:p-6">
-  <div className="flex flex-col w-full gap-4">
-    {/* Top: Image + Details side-by-side on mobile */}
-    <div className="flex flex-row gap-4">
-      {/* Product Image */}
-      <div className="relative w-24 h-24 flex-shrink-0">
-        <Image
-          src={item.product?.images[0] || "/placeholder.svg"}
-          alt={item.product?.name}
-          fill
-          className="object-cover rounded-md"
-        />
-      </div>
+        {cartItems.map((item, index) => (
+          <Card key={index}>
+            <CardContent className="p-4 md:p-6">
+              <div className="flex flex-col w-full gap-4">
+                <div className="flex flex-row gap-4">
+                  <div className="relative w-24 h-24 flex-shrink-0">
+                    <Image
+                      src={item.product.image || "/placeholder.svg"}
+                      alt={item.product.name}
+                      fill
+                      className="object-cover rounded-md"
+                    />
+                  </div>
 
-      {/* Product Info */}
-      <div className="flex-1 min-w-0">
-        <Link href={`/products/${item.product?._id}`}>
-          <h3 className="font-semibold text-base md:text-lg hover:text-primary transition-colors line-clamp-2">
-            {item.product?.name}
-          </h3>
-        </Link>
-        <p className="text-xl font-bold">${item.product?.price}</p>
-        <p className="text-sm text-muted-foreground">
-          {item.product?.stock > 0 ? `${item.product?.stock} in stock` : "Out of stock"}
-        </p>
-      </div>
-    </div>
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/products/${item.product.id}`}>
+                      <h3 className="font-semibold text-base md:text-lg hover:text-primary transition-colors line-clamp-2">
+                        {item.product.name}
+                      </h3>
+                    </Link>
+                    <p className="text-xl font-bold">Rs.{item.product.price}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {item.product.stock > 0 ? `${item.product.stock} in stock` : "Out of stock"}
+                    </p>
+                  </div>
+                </div>
 
-    {/* Quantity Controls below for mobile */}
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => {
-            setCart(true)
-            setTimeout(() => setCart(false), 300)
-            updateQuantity(item._id, item.quantity - 1)
-          }}
-          disabled={item.quantity <= 1}
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <Input
-          type="number"
-          value={item.quantity}
-          onChange={(e) =>
-            updateQuantity(item._id, Number.parseInt(e.target.value) || 1)
-          }
-          className="w-16 text-center"
-          min="1"
-          max={item.product?.stock}
-        />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() =>{ 
-            setCart(true)
-            setTimeout(() => setCart(false), 300)
-            updateQuantity(item._id, item.quantity + 1)
-          
-          }}
-          disabled={item.quantity >= item.product?.stock}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-      </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                      disabled={item.quantity <= 1}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <Input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) =>
+                        updateQuantity(item.product.id, parseInt(e.target.value) || 1)
+                      }
+                      className="w-16 text-center"
+                      min="1"
+                      max={item.product.stock}
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      disabled={item.quantity >= item.product.stock}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
 
-      {/* Price & Remove Button */}
-      <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
-        <p className="font-semibold text-lg">
-          ${(item.product?.price * item.quantity).toFixed(2)}
-        </p>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => removeItem(item._id)}
-          className="text-red-600 hover:text-red-700 hover:bg-red-50 px-1"
-        >
-          <Trash2 className="h-4 w-4 mr-1" />
-          Remove
-        </Button>
-      </div>
-    </div>
-  </div>
-</CardContent>
-
-
+                  <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
+                    <p className="font-semibold text-lg">
+                      Rs.{(item.product.price * item.quantity).toFixed(2)}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeItem(item.product.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 px-1"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
           </Card>
         ))}
       </div>
@@ -215,24 +183,24 @@ export function CartContent() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span>Subtotal ({cartItems.length} items)</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>Rs.{subtotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>Rs.{tax.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}</span>
+                <span>{shipping === 0 ? "Free" : `Rs.${shipping.toFixed(2)}`}</span>
               </div>
 
               <Separator />
 
               <div className="flex justify-between text-base font-semibold">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>Rs.{total.toFixed(2)}</span>
               </div>
             </div>
 

@@ -1,13 +1,14 @@
 'use client'
+
 import Link from "next/link"
-import { useCart } from "@/context/cart-context"
 import Image from "next/image"
+import Cookies from "js-cookie"
+import { useCart } from "@/context/cart-context"
 import { Star, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-
 import { useState } from "react"
 
 interface ProductCardProps {
@@ -23,36 +24,49 @@ interface ProductCardProps {
   }
 }
 
-export function ProductCard({ product }: ProductCardProps)
-
-{
-  const { setCart ,cart} = useCart()
+export function ProductCard({ product }: ProductCardProps) {
+  const { setCart } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const { toast } = useToast()
-  
-  const handleAddToCart = async () => { 
-    console.log(product?.id, quantity )
+
+  const handleAddToCart = () => {
     setIsAddingToCart(true)
+
     try {
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId: product?.id, quantity }),
+      const cartCookie = Cookies.get('cart')
+      let cart = cartCookie ? JSON.parse(cartCookie) : []
+
+      // Check if product already exists
+      const existingItemIndex = cart.findIndex((item: any) => item.product.id === product.id)
+
+      if (existingItemIndex !== -1) {
+        cart[existingItemIndex].quantity += quantity
+      } else {
+        cart.push({
+          product: {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            stock: 1 // optional, mock if needed
+          },
+          quantity,
+          addedAt: new Date().toISOString(),
+        })
+      }
+
+      Cookies.set('cart', JSON.stringify(cart), { expires: 7 }) // 7-day expiry
+
+      setCart(true)
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
       })
 
-      if (response.ok) {
-        setCart(true)
-        toast({
-          title: "Added to cart",
-          description: `${product?.name} has been added to your cart.`,
-        })
-        // Delay resetting cart to false to ensure `cart` is true for a moment
-        setTimeout(() => setCart(false), 300)
-      } else {
-        throw new Error("Failed to add to cart")
-      }
+      setTimeout(() => setCart(false), 300)
     } catch (error) {
+      console.error("Cart error:", error)
       toast({
         title: "Error",
         description: "Failed to add item to cart. Please try again.",
@@ -63,8 +77,6 @@ export function ProductCard({ product }: ProductCardProps)
     }
   }
 
-
-  console.log('produts are',product)
   const discountPercentage = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
@@ -82,24 +94,22 @@ export function ProductCard({ product }: ProductCardProps)
                 height={300}
                 className="w-full h-full object-cover transition-all duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] group-hover:scale-110"
               />
-            </div> 
+            </div>
           </Link>
 
           {product.badge && (
-            <Badge 
-              className="absolute top-3 left-3 transition-all duration-300 ease-out group-hover:scale-105"
-              variant="secondary"
-            >
+            <Badge className="absolute top-3 left-3 transition-all duration-300 ease-out group-hover:scale-105" variant="secondary">
               {product.badge}
             </Badge>
           )}
 
           {discountPercentage > 0 && (
-            <Badge 
-              className="absolute top-3 right-3 bg-red-500 transition-all duration-300 ease-out group-hover:scale-105"
-            >
-              -{discountPercentage}%
-            </Badge>
+           <Badge
+           className="absolute top-3 right-3 rotate-[-90deg] bg-red-600 text-white font-semibold px-2 py-1 text-sm shadow-md rounded-none tracking-wide"
+         >
+           -{discountPercentage}%
+         </Badge>
+         
           )}
         </div>
 
@@ -116,8 +126,8 @@ export function ProductCard({ product }: ProductCardProps)
                 <Star
                   key={i}
                   className={`w-4 h-4 transition-transform duration-200 ${
-                    i < Math.floor(product.rating) 
-                      ? "text-yellow-400 fill-current group-hover:scale-125" 
+                    i < Math.floor(product.rating)
+                      ? "text-yellow-400 fill-current group-hover:scale-125"
                       : "text-gray-300"
                   }`}
                 />
@@ -132,18 +142,19 @@ export function ProductCard({ product }: ProductCardProps)
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <span className="text-2xl font-bold transition-colors duration-300 group-hover:text-primary">
-                  ${product.price}
+                  Rs.{product.price}
                 </span>
                 {product.originalPrice && (
                   <span className="text-sm text-muted-foreground line-through transition-opacity duration-300 group-hover:opacity-75">
-                    ${product.originalPrice}
+                    Rs.{product.originalPrice}
                   </span>
                 )}
               </div>
             </div>
           </div>
 
-          <Button onClick={handleAddToCart}
+          <Button
+            onClick={handleAddToCart}
             className="w-full transition-all duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] 
                       translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
             size="sm"

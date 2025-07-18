@@ -124,7 +124,7 @@ export function OrderManagement() {
                     </td>
                     <td className="p-3">{item.name}</td>
                     <td className="p-3 text-center">{item.quantity}</td>
-                    <td className="p-3 text-right">${(item.price * item.quantity).toFixed(2)}</td>
+                    <td className="p-3 text-right">Rs.{(item.price * item.quantity).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

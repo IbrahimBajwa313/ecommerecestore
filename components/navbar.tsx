@@ -5,14 +5,22 @@ import { useCart } from "@/context/cart-context"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ShoppingCart, User, Search, Menu, X, LogOut, Settings } from "lucide-react"
+import {
+  ShoppingCart,
+  User,
+  Search,
+  Menu,
+  X,
+  LogOut,
+  Settings,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { useAuth } from "@/components/auth-provider"
-import { motion } from "framer-motion"
+import Cookies from "js-cookie"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +40,7 @@ export function Navbar() {
   const [showShimmer, setShowShimmer] = useState(false)
 
   useEffect(() => {
-    fetchCartCount()
+    updateCartCountFromCookie()
   }, [cart])
 
   useEffect(() => {
@@ -42,16 +50,14 @@ export function Navbar() {
     }
   }, [isMenuOpen])
 
-  const fetchCartCount = async () => {
+  const updateCartCountFromCookie = () => {
     try {
-      const response = await fetch("/api/cart")
-      if (response.ok) {
-        const data = await response.json()
-        const totalItems = data.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0
-        setCartItemCount(totalItems)
-      }
+      const cookie = Cookies.get("cart")
+      const cart = cookie ? JSON.parse(cookie) : []
+      const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0)
+      setCartItemCount(count)
     } catch (error) {
-      console.error("Error fetching cart count:", error)
+      console.error("Error reading cart cookie:", error)
       setCartItemCount(0)
     }
   }
@@ -114,6 +120,7 @@ export function Navbar() {
           {/* Right Side */}
           <div className="flex items-center space-x-4">
             <ThemeToggle />
+
             {/* Cart */}
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
@@ -180,71 +187,69 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         <AnimatePresence>
-  {isMenuOpen && (
-    <motion.div
-      key="mobile-menu"
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: "auto", opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="md:hidden overflow-hidden border-t bg-background shadow-sm"
-    >
-      <div className="max-h-[calc(100vh-5rem)] overflow-y-auto flex flex-col space-y-4 px-4 py-4">
-        {/* Search */}
-        <form onSubmit={handleSearch} className="flex items-center space-x-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              type="search"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </form>
-
-        <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-          Home
-        </Link>
-        <Link href="/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-          Products
-        </Link>
-        <Link href="/categories" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-          Categories
-        </Link>
-        <Link href="/ourStory" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-          Our Story
-        </Link>
-
-        {user ? (
-          <>
-            <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-              Profile Settings
-            </Link>
-            {user.role === "admin" && (
-              <Link href="/admin/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-                Admin Panel
-              </Link>
-            )}
-            <button
-              onClick={handleLogout}
-              className="text-red-600 hover:text-red-700 transition-colors py-2 text-left"
+          {isMenuOpen && (
+            <motion.div
+              key="mobile-menu"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="md:hidden overflow-hidden border-t bg-background shadow-sm"
             >
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-            Login
-          </Link>
-        )}
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+              <div className="max-h-[calc(100vh-5rem)] overflow-y-auto flex flex-col space-y-4 px-4 py-4">
+                {/* Search */}
+                <form onSubmit={handleSearch} className="flex items-center space-x-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                    <Input
+                      type="search"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                </form>
 
+                <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                  Home
+                </Link>
+                <Link href="/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                  Products
+                </Link>
+                <Link href="/categories" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                  Categories
+                </Link>
+                <Link href="/ourStory" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                  Our Story
+                </Link>
 
+                {user ? (
+                  <>
+                    <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                      Profile Settings
+                    </Link>
+                    {user.role === "admin" && (
+                      <Link href="/admin/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                        Admin Panel
+                      </Link>
+                    )}
+                    <button
+                      onClick={handleLogout}
+                      className="text-red-600 hover:text-red-700 transition-colors py-2 text-left"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                    Login
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   )
