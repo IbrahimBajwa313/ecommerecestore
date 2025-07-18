@@ -22,7 +22,6 @@ export default function HomePage() {
 
 
         <TrendingProducts /> 
-        <EveryonesFavourite/>
         <CategorySection />
         <WhatsappReviewSection/>
       </main>

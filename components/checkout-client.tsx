@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Cookies from "js-cookie"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -8,14 +9,15 @@ import { Loader2 } from "lucide-react"
 import { OrderSummary } from "@/components/order-summary"
 
 interface CartItem {
-  _id: string
   product: {
-    _id: string
+    id: string
     name: string
     price: number
-    images: string[]
+    image: string
+    stock: number
   }
   quantity: number
+  addedAt: string
 }
 
 export function CheckoutClient() {
@@ -29,24 +31,20 @@ export function CheckoutClient() {
   const [address, setAddress] = useState("")
   const [city, setCity] = useState("")
   const [postalCode, setPostalCode] = useState("")
-
   const [placingOrder, setPlacingOrder] = useState(false)
 
   useEffect(() => {
-    fetchCartItems()
-  }, [])
-
-  const fetchCartItems = async () => {
     try {
-      const response = await fetch("/api/cart")
-      const data = await response.json()
-      setCartItems(data.items || [])
-    } catch (err) {
-      console.error("Failed to fetch cart", err)
+      const cookie = Cookies.get("cart")
+      const parsed = cookie ? JSON.parse(cookie) : []
+      setCartItems(parsed)
+    } catch (error) {
+      console.error("Failed to read cart from cookies", error)
+      setCartItems([])
     } finally {
       setTimeout(() => setIsLoading(false), 700)
     }
-  }
+  }, [])
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -64,11 +62,11 @@ export function CheckoutClient() {
 
     const orderPayload = {
       items: cartItems.map((item) => ({
-        product: item.product._id,
+        product: item.product.id,
         name: item.product.name,
         price: item.product.price,
         quantity: item.quantity,
-        image: item.product.images[0] || "",
+        image: item.product.image,
       })),
       address: {
         fullName: name,
@@ -94,16 +92,11 @@ export function CheckoutClient() {
       })
 
       if (res.ok) {
+        Cookies.remove("cart") // 🧹 Clear cart cookie
         alert("Order placed successfully!")
         window.location.href = "/thank-you"
-        await fetch("/api/cart", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json", "user-id": "guest" },
-          body: JSON.stringify({ clearAll: true }),
-        })
-        
-        
-      } else {
+      }
+      else {
         const error = await res.json()
         console.error("Order error:", error)
         alert("Failed to place order.")
@@ -140,7 +133,6 @@ export function CheckoutClient() {
               <Input type="text" placeholder="Postal Code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
             </div>
 
-            {/* Payment Method */}
             <div className="pt-6 space-y-3">
               <h2 className="text-xl font-semibold">Payment Method</h2>
               <div className="flex items-center space-x-2">
@@ -169,7 +161,7 @@ export function CheckoutClient() {
         </Card>
       </div>
 
-      {/* Order Summary (no props) */}
+      {/* Order Summary */}
       <div>
         <OrderSummary />
       </div>

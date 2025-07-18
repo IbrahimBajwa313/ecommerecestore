@@ -13,7 +13,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">MS</span>
               </div>
-              <span className="font-bold text-xl">ModernStore</span>
+              <span className="font-bold text-xl">Toodlers World</span>
             </div>
             <p className="text-muted-foreground">
               Your trusted partner for premium products and exceptional shopping experiences.
