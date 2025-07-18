@@ -68,8 +68,8 @@ export function CartContent() {
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
   const tax = subtotal * 0.08
-  const shipping = subtotal > 100 ? 0 : 9.99
-  const total = subtotal + tax + shipping
+  const shipping = subtotal >= 2000 ? 0 : 200
+  const total = subtotal  + shipping
 
   if (isLoading) {
     return (
@@ -186,10 +186,7 @@ export function CartContent() {
                 <span>Rs.{subtotal.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between">
-                <span>Tax</span>
-                <span>Rs.{tax.toFixed(2)}</span>
-              </div>
+            
 
               <div className="flex justify-between">
                 <span>Shipping</span>
@@ -215,7 +212,7 @@ export function CartContent() {
 
             {shipping > 0 && (
               <p className="text-sm text-muted-foreground mt-4 text-center">
-                Free shipping on orders over $100
+                Free shipping on orders over Rs.2000
               </p>
             )}
           </CardContent>

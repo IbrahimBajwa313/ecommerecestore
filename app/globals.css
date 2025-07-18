@@ -75,5 +75,5 @@
 }
 
 .animate-whatsapp-spin {
-  animation: rotate-smooth-wobble 5s infinite linear;
+  animation: rotate-smooth-wobble 3s infinite linear;
 }

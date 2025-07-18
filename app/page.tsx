@@ -25,6 +25,7 @@ export default function HomePage() {
         <CategorySection />
         <WhatsappReviewSection/>
       </main>
+      <NewsletterSection/>
       <Footer />
     </div>
   )

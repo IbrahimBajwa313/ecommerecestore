@@ -1,51 +1,66 @@
+"use client"
+
 import Link from "next/link"
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react"
+import Image from "next/image"
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Code2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export function Footer() {
   return (
     <footer className="bg-background border-t">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {/* Company Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">MS</span>
+          <div className="space-y-5">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded-full overflow-hidden flex items-center justify-center">
+                <img
+                  src="/logo.png"
+                  alt="Toddlers World Logo"
+                  className="h-full object-contain"
+                />
               </div>
-              <span className="font-bold text-xl">Toodlers World</span>
+              <span className="font-bold text-xl">Toddlers World</span>
             </div>
-            <p className="text-muted-foreground">
-              Your trusted partner for premium products and exceptional shopping experiences.
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Your trusted partner for premium baby products and exceptional shopping experiences.
             </p>
-            <div className="flex space-x-4">
-              <Button variant="ghost" size="icon">
-                <Facebook className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Twitter className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Instagram className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Youtube className="w-5 h-5" />
-              </Button>
+            <div className="flex space-x-4 pt-2">
+              <Link href="https://www.facebook.com/profile.php?id=61567127003108&mibextid=ZbWKwL" target="_blank">
+                <Button variant="ghost" size="icon">
+                  <Facebook className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link href="https://twitter.com" target="_blank">
+                <Button variant="ghost" size="icon">
+                  <Twitter className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link href="https://www.instagram.com/toddlersworld16?igsh=djU0bzdtMGQ2dzR0" target="_blank">
+                <Button variant="ghost" size="icon">
+                  <Instagram className="w-5 h-5" />
+                </Button>
+              </Link>
+              <Link href="https://www.tiktok.com/@toddlersworld16?_t=ZS-8y8dGyD3eqO&_r=1" target="_blank">
+                <Button variant="ghost" size="icon">
+                  <Youtube className="w-5 h-5 rotate-45" /> {/* Placeholder for TikTok */}
+                </Button>
+              </Link>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             <h3 className="font-semibold text-lg">Quick Links</h3>
-            <div className="space-y-2">
+            <div className="space-y-2 text-sm">
               <Link href="/products" className="block text-muted-foreground hover:text-foreground transition-colors">
                 Products
               </Link>
               <Link href="/categories" className="block text-muted-foreground hover:text-foreground transition-colors">
                 Categories
               </Link>
-              <Link href="/about" className="block text-muted-foreground hover:text-foreground transition-colors">
-                About Us
+              <Link href="/ourStory" className="block text-muted-foreground hover:text-foreground transition-colors">
+                Our Story
               </Link>
               <Link href="/contact" className="block text-muted-foreground hover:text-foreground transition-colors">
                 Contact
@@ -53,58 +68,50 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Customer Service */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Customer Service</h3>
-            <div className="space-y-2">
-              <Link href="/help" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Help Center
-              </Link>
-              <Link href="/shipping" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Shipping Info
-              </Link>
-              <Link href="/returns" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Returns
-              </Link>
-              <Link href="/privacy" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Privacy Policy
-              </Link>
-            </div>
-          </div>
-
           {/* Contact Info */}
-          <div className="space-y-4">
+          <div className="space-y-5">
             <h3 className="font-semibold text-lg">Contact Info</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Mail className="w-5 h-5 text-muted-foreground" />
-                <span className="text-muted-foreground">support@modernstore.com</span>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <div className="flex items-center space-x-2">
+                <Mail className="w-5 h-5" />
+                <span>a.huraira.ah16@gmail.com</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="w-5 h-5 text-muted-foreground" />
-                <span className="text-muted-foreground">+1 (555) 123-4567</span>
+              <div className="flex items-center space-x-2">
+                <Phone className="w-5 h-5" />
+                <span>+92 304 6290784</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-5 h-5 text-muted-foreground" />
-                <span className="text-muted-foreground">123 Commerce St, City, State 12345</span>
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-5 h-5" />
+                <span>Okara, Pakistan</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-muted-foreground text-sm">© 2024 ModernStore. All rights reserved.</p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/terms" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-              Terms of Service
-            </Link>
-            <Link href="/privacy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/cookies" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-              Cookie Policy
-            </Link>
+        {/* Bottom Bar */}
+        <div className="border-t mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Toddlers World. All rights reserved.</p>
+          <div className="flex space-x-6 mt-3 md:mt-0">
+            <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link>
           </div>
+        </div>
+
+        {/* Developer Credit */}
+        <div className="mt-6 text-center text-xs text-muted-foreground flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+          <span className="flex items-center gap-1">
+            <Code2 className="w-4 h-4" /> Developed by{" "}
+            <span className="font-medium text-foreground">Muhammad Ibrahim Aslam</span>
+          </span>
+          <span>·</span>
+          <Link
+            href="https://wa.me/923074583567"
+            target="_blank"
+            className="text-blue-600 hover:underline"
+          >
+            Contact Developer
+          </Link>
         </div>
       </div>
     </footer>

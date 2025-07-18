@@ -215,7 +215,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               transition={{
                 duration: 0.3,
                 repeat: Infinity,
-                repeatDelay: 5,
+                repeatDelay: 3,
                 ease: "linear",
               }}
               className="flex-1"

@@ -51,8 +51,8 @@ export function CheckoutClient() {
     0
   )
   const tax = subtotal * 0.08
-  const shipping = subtotal > 100 ? 0 : 9.99
-  const total = subtotal + tax + shipping
+  const shipping = subtotal >= 2000 ? 0 : 200
+  const total = subtotal  + shipping
 
   const handlePlaceOrder = async () => {
     if (!name || !email || !phone || !address || !city || !postalCode) {

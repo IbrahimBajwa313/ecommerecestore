@@ -5,8 +5,25 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import clsx from "clsx"
 
 export function HeroSection() {
+  const images = [
+    "Featured_product.png",
+    "/headphone1.webp",
+    "/watch.webp",
+  ]
+
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % images.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <section className="relative bg-gradient-to-r from-purple-600 to-blue-600 text-white overflow-hidden">
       <div className="container mx-auto px-4 py-20 lg:py-24">
@@ -80,24 +97,38 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Section - Image */}
+          {/* Right Section - Image Carousel */}
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
-            className="relative"
+            className="relative w-full flex flex-col items-center"
           >
-            <div className="relative z-10">
+            <div className="relative w-full max-w-[600px] overflow-hidden rounded-2xl shadow-2xl">
               <Image
-                src="/Featured_product.png"
-                alt="Hero Product"
+                key={images[current]}
+                src={`${images[current]}?height=600&width=600`}
+                alt={`Hero Product ${current + 1}`}
                 width={600}
                 height={600}
-                className="rounded-2xl shadow-2xl"
+                className="object-cover transition-all duration-700 ease-in-out"
                 priority
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-2xl transform rotate-6 scale-105 opacity-20"></div>
+
+            {/* Dots */}
+            <div className="flex mt-4 space-x-2">
+              {images.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrent(idx)}
+                  className={clsx(
+                    "w-3 h-3 rounded-full transition-colors",
+                    current === idx ? "bg-white" : "bg-white/40"
+                  )}
+                />
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>

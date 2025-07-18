@@ -322,10 +322,10 @@ export function CategoryManagement(): ReactElement {
   const handleImageUpload = useCallback(
     async (files: FileList | null) => {
       if (!files || files.length === 0) return
-
+  
       const file = files[0]
       setUploadingImage(true)
-
+  
       try {
         // Validate file type
         if (!file.type.startsWith("image/")) {
@@ -336,39 +336,40 @@ export function CategoryManagement(): ReactElement {
           })
           return
         }
-
-        // Validate file size (5MB limit)
-        if (file.size > 5 * 1024 * 1024) {
+  
+        // Validate file size (10MB limit for Cloudinary)
+        if (file.size > 10 * 1024 * 1024) {
           toast({
             title: "Error",
-            description: "Image size should be less than 5MB",
+            description: "Image size should be less than 10MB",
             variant: "destructive",
           })
           return
         }
-
+  
         const formDataUpload = new FormData()
         formDataUpload.append("file", file)
-
-        const response = await fetch("/api/upload-local", {
+  
+        const response = await fetch("/api/upload", {
           method: "POST",
           body: formDataUpload,
         })
-
+  
         if (response.ok) {
           const data = await response.json()
           setFormData((prev) => ({ ...prev, image: data.url }))
           toast({
             title: "Success",
-            description: "Image uploaded successfully",
+            description: "Image uploaded successfully to Cloudinary",
           })
         } else {
-          throw new Error("Failed to upload image")
+          const errorData = await response.json()
+          throw new Error(errorData.error || "Failed to upload image")
         }
       } catch (error) {
         toast({
           title: "Error",
-          description: "Failed to upload image",
+          description: error instanceof Error ? error.message : "Failed to upload image",
           variant: "destructive",
         })
       } finally {

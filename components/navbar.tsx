@@ -157,7 +157,7 @@ export function Navbar() {
                   </DropdownMenuItem>
                   {user.role === "admin" && (
                     <DropdownMenuItem asChild>
-                      <Link href="/admin" className="flex items-center">
+                      <Link href="/admin/products" className="flex items-center">
                         <Settings className="mr-2 h-4 w-4" />
                         Admin Panel
                       </Link>

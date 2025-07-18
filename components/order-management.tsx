@@ -130,13 +130,12 @@ export function OrderManagement() {
               </tbody>
             </table>
           </div>
-
+ 
           {/* Totals */}
           <div className="text-right mt-4 space-y-1 text-sm">
-            <p><strong>Subtotal:</strong> ${order.subtotal.toFixed(2)}</p>
-            <p><strong>Tax:</strong> ${order.tax.toFixed(2)}</p>
-            <p><strong>Shipping:</strong> ${order.shipping.toFixed(2)}</p>
-            <p className="text-base font-semibold">Total: ${order.total.toFixed(2)}</p>
+            <p><strong>Subtotal:</strong> Rs.{order.subtotal.toFixed(2)}</p>
+            <p><strong>Shipping:</strong> Rs.{order.shipping.toFixed(2)}</p>
+            <p className="text-base font-semibold">Total: Rs.{order.total.toFixed(2)}</p>
           </div>
         </div>
       ))}
