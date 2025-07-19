@@ -27,7 +27,7 @@ export function CategoriesGrid() {
       const response = await fetch("/api/admin/categories")
       if (response.ok) {
         const data = await response.json()
-        setCategories(data)
+        setCategories(data.categories)
       }
     } catch (error) {
       console.error("Error fetching categories:", error)
@@ -52,7 +52,7 @@ export function CategoriesGrid() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {categories.map((category) => (
+      {categories?.map((category) => (
         <Link key={category._id} href={`/products?category=${category.slug}`}>
           <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
             <CardContent className="p-0">
