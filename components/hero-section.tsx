@@ -42,7 +42,7 @@ export function HeroSection() {
                 transition={{ delay: 0.2, duration: 0.8 }}
                 className="text-4xl lg:text-6xl font-bold leading-tight"
               >
-                Discover Premium Products for Modern Living
+             Discover Premium Baby Essentials for Happy Little Moments
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -50,7 +50,7 @@ export function HeroSection() {
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="text-xl lg:text-2xl text-purple-100"
               >
-                Shop the latest trends with fast shipping and exceptional customer service
+              Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best
               </motion.p>
             </div>
 
