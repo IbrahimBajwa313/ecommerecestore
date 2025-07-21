@@ -2,116 +2,75 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Code2 } from "lucide-react"
+import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, Code2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { SiTiktok } from "react-icons/si"
 
 export function Footer() {
   return (
     <footer className="bg-background border-t">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {/* Company Info */}
-          <div className="space-y-5">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-primary rounded-full overflow-hidden flex items-center justify-center">
-                <img
-                  src="/logo.png"
-                  alt="Toddlers World Logo"
-                  className="h-full object-contain"
-                />
-              </div>
-              <span className="font-bold text-xl">Toddlers World</span>
-            </div>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Your trusted partner for premium baby products and exceptional shopping experiences.
-            </p>
-            <div className="flex space-x-4 pt-2">
-              <Link href="https://www.facebook.com/profile.php?id=61567127003108&mibextid=ZbWKwL" target="_blank">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Brand and Social */}
+          <div className="flex flex-col items-start gap-4">
+            <Link href="/">
+              <Image src="/logo.png" alt="Logo" width={120} height={40} />
+            </Link>
+            <p className="text-sm text-muted-foreground">Bringing joy to every toddler's world.</p>
+            <div className="flex space-x-2">
+              <Link href="https://www.facebook.com" target="_blank">
                 <Button variant="ghost" size="icon">
                   <Facebook className="w-5 h-5" />
                 </Button>
               </Link>
-              <Link href="https://twitter.com" target="_blank">
-                <Button variant="ghost" size="icon">
-                  <Twitter className="w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="https://www.instagram.com/toddlersworld16?igsh=djU0bzdtMGQ2dzR0" target="_blank">
+             
+              <Link href="https://www.instagram.com" target="_blank">
                 <Button variant="ghost" size="icon">
                   <Instagram className="w-5 h-5" />
                 </Button>
               </Link>
               <Link href="https://www.tiktok.com/@toddlersworld16?_t=ZS-8y8dGyD3eqO&_r=1" target="_blank">
-                <Button variant="ghost" size="icon">
-                  <Youtube className="w-5 h-5 rotate-45" /> {/* Placeholder for TikTok */}
-                </Button>
-              </Link>
-            </div>
-          </div>
+  <Button variant="ghost" size="icon">
+    <SiTiktok className="w-5 h-5 text-muted-foreground" /> {/* or use text-white */}
+  </Button>
+</Link>
 
-          {/* Quick Links */}
-          <div className="space-y-5">
-            <h3 className="font-semibold text-lg">Quick Links</h3>
-            <div className="space-y-2 text-sm">
-              <Link href="/products" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Products
-              </Link>
-              <Link href="/categories" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Categories
-              </Link>
-              <Link href="/ourStory" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Our Story
-              </Link>
-              <Link href="/contact" className="block text-muted-foreground hover:text-foreground transition-colors">
-                Contact
-              </Link>
             </div>
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-5">
-            <h3 className="font-semibold text-lg">Contact Info</h3>
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-2">
-                <Mail className="w-5 h-5" />
-                <span>a.huraira.ah16@gmail.com</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="w-5 h-5" />
-                <span>+92 304 6290784</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-5 h-5" />
-                <span>Okara, Pakistan</span>
-              </div>
-            </div>
+          <div>
+            <h4 className="text-sm font-semibold mb-4">Contact</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li className="flex items-center gap-2">
+                <Phone className="w-4 h-4" /> +123 456 789
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4" /> support@toddlersworld.com
+              </li>
+              <li className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" /> 123 Toddler Street, Toyland
+              </li>
+            </ul>
+          </div>
+
+          {/* Useful Links */}
+          <div>
+            <h4 className="text-sm font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/about">About Us</Link></li>
+              <li><Link href="/contact">Contact Us</Link></li>
+              <li><Link href="/shop">Shop</Link></li>
+              <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="border-t mt-10 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Toddlers World. All rights reserved.</p>
-          <div className="flex space-x-6 mt-3 md:mt-0">
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
-            <Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link>
+        <div className="mt-12 text-center text-xs text-muted-foreground border-t pt-6">
+          <div className="flex justify-center items-center gap-1">
+            <Code2 className="w-3 h-3" />
+            <span>© 2025 Toddlers World. All rights reserved.</span>
           </div>
-        </div>
-
-        {/* Developer Credit */}
-        <div className="mt-6 text-center text-xs text-muted-foreground flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-          <span className="flex items-center gap-1">
-            <Code2 className="w-4 h-4" /> Developed by{" "}
-            <span className="font-medium text-foreground">Muhammad Ibrahim Aslam</span>
-          </span>
-          <span>·</span>
-          <Link
-            href="https://wa.me/923074583567"
-            target="_blank"
-            className="text-blue-600 hover:underline"
-          >
-            Contact Developer
-          </Link>
         </div>
       </div>
     </footer>

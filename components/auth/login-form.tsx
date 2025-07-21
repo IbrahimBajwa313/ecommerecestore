@@ -101,11 +101,7 @@ export function LoginForm() {
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
 
-      <div className="text-sm text-center text-gray-600 mt-4">
-        <p>Demo Credentials:</p>
-        <p>Admin: admin@example.com / admin123</p>
-        <p>User: user@example.com / user123</p>
-      </div>
+      
     </form>
   )
 }
