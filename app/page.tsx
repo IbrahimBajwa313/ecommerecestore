@@ -17,7 +17,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
           <TopBanner />
       <Navbar />
-      <main>
+      <main className="min-h-screen">
         <HeroSection />
 
 
