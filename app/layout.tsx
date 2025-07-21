@@ -12,30 +12,37 @@ import Link from "next/link"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "ModernStore - Premium eCommerce Experience",
-  description: "Discover premium products with fast shipping and exceptional customer service.",
-  keywords: "ecommerce, online store, premium products, fast shipping",
+  title: "ToddlersWorld - Premium Baby Essentials",
+  description:
+    "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
+  keywords:
+    "baby products, toddler essentials, safe baby items, premium baby store, baby care, baby toys, newborn must-haves, fast shipping baby store",
   openGraph: {
-    title: "ModernStore - Premium eCommerce Experience",
-    description: "Discover premium products with fast shipping and exceptional customer service.",
+    title: "ToddlersWorld - Premium Baby Essentials",
+    description:
+      "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
     type: "website",
-    url: "https://modernstore.com",
+    url: "https://toddlersworld.com",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "ModernStore",
+        alt: "ToddlersWorld",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ModernStore - Premium eCommerce Experience",
-    description: "Discover premium products with fast shipping and exceptional customer service.",
+    title: "ToddlersWorld - Premium Baby Essentials",
+    description:
+      "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
     images: ["/og-image.jpg"],
   },
   generator: "v0.dev",
+  icons: {
+    icon: "/logo.png",
+  },
 }
 
 export default function RootLayout({
@@ -45,6 +52,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/logo.png" />
+      </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
@@ -53,13 +63,13 @@ export default function RootLayout({
 
               {/* WhatsApp Floating Button */}
               <Link
-                href="https://wa.me/923039008580" // Replace with your number
+                href="https://wa.me/923039008580"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fixed bottom-6 right-6 z-50"
               >
                 <Image
-                  src="/whatsapp-icon.png" // Place the logo in public/ directory
+                  src="/whatsapp-icon.png"
                   alt="WhatsApp"
                   width={72}
                   height={72}
