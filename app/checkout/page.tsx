@@ -3,7 +3,7 @@ import { Footer } from "@/components/footer"
 import { CheckoutClient } from "@/components/checkout-client"
 
 export const metadata = {
-  title: "Checkout - ModernStore",
+  title: "Checkout - ToddlersWorld",
   description: "Complete your purchase securely",
 }
 

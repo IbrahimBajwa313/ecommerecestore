@@ -3,7 +3,7 @@ import { Footer } from "@/components/footer"
 import { CartContent } from "@/components/cart-content"
 
 export const metadata = {
-  title: "Shopping Cart - ModernStore",
+  title: "Shopping Cart - ToddlersWorld",
   description: "Review your items and proceed to checkout",
 }
 

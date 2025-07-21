@@ -3,7 +3,7 @@ import { Footer } from "@/components/footer"
 import { CategoriesGrid } from "@/components/categories-grid"
 
 export const metadata = {
-  title: "Categories - ModernStore",
+  title: "Categories - ToddlersWorld",
   description: "Browse all product categories",
 }
 

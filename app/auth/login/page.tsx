@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link"
 
 export const metadata = {
-  title: "Login - ModernStore",
+  title: "Login - ToddlersWorld",
   description: "Sign in to your account",
 }
 

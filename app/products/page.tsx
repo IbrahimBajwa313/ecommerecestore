@@ -5,7 +5,7 @@ import { ProductFilters } from "@/components/product-filters"
 import { Suspense } from "react"
 
 export const metadata = {
-  title: "Products - ModernStore",
+  title: "Products - ToddlersWorld",
   description: "Browse our collection of premium products",
 }
 
