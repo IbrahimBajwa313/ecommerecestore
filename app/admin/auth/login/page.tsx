@@ -13,7 +13,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="container mx-auto px-4 py-16">
+      <main className="container min-h-screen mx-auto px-4 py-16">
         <div className="max-w-md mx-auto">
           <Card>
             <CardHeader className="text-center">
