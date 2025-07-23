@@ -16,18 +16,18 @@ export function Footer() {
           <div className="bg-gradient-to-r from-[#ab56ff] to-[#4f46e5] text-white rounded-xl shadow-xl border border-white/30 overflow-visible">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4 py-6 md:px-10 md:py-10 relative">
            
-              <div className="md:absolute relative flex flex-col -left-0 -bottom-6  md:block">
+              <div className="md:absolute relative flex flex-col left-0 -bottom-6  md:block">
                 <Image
                   src="/footer.png"
                   alt="Newsletter Illustration"
-                  width={210}
-                  height={210}
+                  width={220}
+                  height={220}
                   className="object-contain"
                 />
               </div>
 
           
-              <div className="w-9/12 md:pl-44 lg:pl-48 flex flex-col justify-center gap-3 text-center md:text-left">
+              <div className=" md:pl-48 lg:pl-56 flex flex-col justify-center gap-3 text-center md:text-left">
                 <h2 className="text-xl md:text-2xl lg:text-3xl font-bold leading-snug">
                   Subscribe to our newsletter
                 </h2>

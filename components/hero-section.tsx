@@ -1,18 +1,19 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
 import clsx from "clsx"
 
 export function HeroSection() {
   const images = [
-    "Featured_product.png",
-    "/headphone1.webp",
-    "/watch.webp",
+    "F1.png",
+    "F2.png",
+    "F3.png",
+    "F4.png",
+    "F5.png",
   ]
 
   const [current, setCurrent] = useState(0)
@@ -42,7 +43,7 @@ export function HeroSection() {
                 transition={{ delay: 0.2, duration: 0.8 }}
                 className="text-4xl lg:text-6xl font-bold leading-tight"
               >
-             Discover Premium Baby Essentials for Happy Little Moments
+                Discover Premium Baby Essentials for Happy Little Moments
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -50,7 +51,8 @@ export function HeroSection() {
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="text-xl lg:text-2xl text-purple-100"
               >
-              Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best
+                Shop adorable, safe, and high-quality baby products loved by parents.
+                Fast shipping & 24/7 support – because your baby deserves the best.
               </motion.p>
             </div>
 
@@ -88,7 +90,7 @@ export function HeroSection() {
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>30-Day Returns</span>
+                <span>7-Day Returns</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
@@ -104,16 +106,21 @@ export function HeroSection() {
             transition={{ delay: 1, duration: 1 }}
             className="relative w-full flex flex-col items-center"
           >
-            <div className="relative w-full max-w-[600px] overflow-hidden rounded-2xl shadow-2xl">
-              <Image
-                key={images[current]}
-                src={`${images[current]}?height=600&width=600`}
-                alt={`Hero Product ${current + 1}`}
-                width={600}
-                height={600}
-                className="object-cover transition-all duration-700 ease-in-out"
-                priority
-              />
+            <div className="relative w-full max-w-[500px] overflow-hidden rounded-2xl shadow-2xl">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={images[current]}
+                  src={`${images[current]}?height=500&width=500`}
+                  alt={`Hero Product ${current + 1}`}
+                  width={500}
+                  height={500}
+                  className="object-cover rounded-2xl w-full h-auto"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                />
+              </AnimatePresence>
             </div>
 
             {/* Dots */}

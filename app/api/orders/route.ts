@@ -3,10 +3,10 @@ import connectDB from "@/lib/mongodb"
 import Order from "@/models/Order"
 import { v4 as uuidv4 } from "uuid"
 
+// CREATE NEW ORDER (POST)
 export async function POST(req: NextRequest) {
   try {
     await connectDB()
-
     const body = await req.json()
     const {
       items,
@@ -18,24 +18,21 @@ export async function POST(req: NextRequest) {
       notes,
     } = body
 
-    // ✅ Validate items
+    // Validate
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json({ error: "No items provided." }, { status: 400 })
     }
 
-    // ✅ Validate address
     if (
-      !address ||
-      !address.fullName ||
-      !address.phoneNumber ||
-      !address.street ||
-      !address.city ||
-      !address.zipCode
+      !address?.fullName ||
+      !address?.phoneNumber ||
+      !address?.street ||
+      !address?.city ||
+      !address?.zipCode
     ) {
       return NextResponse.json({ error: "Incomplete address information." }, { status: 400 })
     }
 
-    // ✅ Validate pricing fields
     if (
       typeof subtotal !== "number" ||
       typeof tax !== "number" ||
@@ -45,10 +42,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid price calculations." }, { status: 400 })
     }
 
-    // ✅ Generate unique order number (e.g., MS-5F3A9C)
     const orderNumber = `MS-${uuidv4().split("-")[0].toUpperCase()}`
 
-    // ✅ Create and save order
     const newOrder = await Order.create({
       orderNumber,
       items,
@@ -70,15 +65,40 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// FETCH ORDERS (GET)
 export async function GET() {
   try {
     await connectDB()
-
     const orders = await Order.find().sort({ createdAt: -1 })
-
     return NextResponse.json({ success: true, orders }, { status: 200 })
   } catch (error) {
     console.error("Error fetching orders:", error)
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  }
+}
+
+// UPDATE ORDER STATUS (PATCH)
+export async function PATCH(req: NextRequest) {
+  try {
+    await connectDB()
+    const body = await req.json()
+    const { orderId, orderStatus } = body
+
+    if (!orderId || !["pending", "complete", "delete"].includes(orderStatus)) {
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+    }
+
+    const order = await Order.findById(orderId)
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 })
+    }
+
+    order.orderStatus = orderStatus
+    await order.save()
+
+    return NextResponse.json({ success: true, updatedStatus: orderStatus }, { status: 200 })
+  } catch (error) {
+    console.error("Error updating order status:", error)
     return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }

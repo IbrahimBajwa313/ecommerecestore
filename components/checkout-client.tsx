@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { OrderSummary } from "@/components/order-summary"
+import { useToast } from "@/hooks/use-toast"
 
 interface CartItem {
   product: {
@@ -21,6 +22,8 @@ interface CartItem {
 }
 
 export function CheckoutClient() {
+  const { toast } = useToast()
+
   const [isLoading, setIsLoading] = useState(true)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
 
@@ -52,11 +55,15 @@ export function CheckoutClient() {
   )
   const tax = subtotal * 0.08
   const shipping = subtotal >= 2000 ? 0 : 200
-  const total = subtotal  + shipping
+  const total = subtotal + shipping
 
   const handlePlaceOrder = async () => {
     if (!name || !email || !phone || !address || !city || !postalCode) {
-      alert("Please fill in all required fields.")
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      })
       return
     }
 
@@ -85,6 +92,7 @@ export function CheckoutClient() {
 
     try {
       setPlacingOrder(true)
+
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,25 +100,39 @@ export function CheckoutClient() {
       })
 
       if (res.ok) {
-        Cookies.remove("cart") // 🧹 Clear cart cookie
-        alert("Order placed successfully!")
-        window.location.href = "/thank-you"
-      }
-      else {
+        Cookies.remove("cart")
+        toast({
+          title: "Order Placed 🎉",
+          description: "Your order has been placed successfully!",
+          variant: "default",
+        })
+
+        setTimeout(() => {
+          window.location.href = "/thank-you"
+        }, 1000)
+      } else {
         const error = await res.json()
         console.error("Order error:", error)
-        alert("Failed to place order.")
+        toast({
+          title: "Failed to Place Order",
+          description: error?.message || "Something went wrong.",
+          variant: "destructive",
+        })
       }
     } catch (err) {
       console.error("Order error:", err)
-      alert("Error placing order.")
+      toast({
+        title: "Network Error",
+        description: "Unable to reach the server. Please try again later.",
+        variant: "destructive",
+      })
     } finally {
       setPlacingOrder(false)
     }
   }
 
   return isLoading ? (
-    <div className="flex justify-center items-center py-20">
+    <div className="flex justify-center min-h-screen  py-20">
       <Loader2 className="h-8 w-8 animate-spin" />
     </div>
   ) : (
@@ -127,7 +149,11 @@ export function CheckoutClient() {
               <Input type="text" placeholder="Alternate Phone Number (Optional)" value={altPhone} onChange={(e) => setAltPhone(e.target.value)} />
               <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
               <Input type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
-              <select defaultValue="Pakistan" className="w-full border border-input rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+              <select
+                defaultValue="Pakistan"
+                disabled
+                className="w-full border border-input rounded-md px-3 py-2 text-sm text-muted-foreground bg-muted cursor-not-allowed"
+              >
                 <option>Pakistan</option>
               </select>
               <Input type="text" placeholder="Postal Code" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
@@ -137,9 +163,7 @@ export function CheckoutClient() {
               <h2 className="text-xl font-semibold">Payment Method</h2>
               <div className="flex items-center space-x-2">
                 <input type="radio" id="cod" name="payment" value="cod" defaultChecked className="accent-primary" />
-                <label htmlFor="cod" className="text-sm">
-                  Cash on Delivery (COD)
-                </label>
+                <label htmlFor="cod" className="text-sm">Cash on Delivery (COD)</label>
               </div>
             </div>
 
