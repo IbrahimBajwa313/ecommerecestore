@@ -25,10 +25,16 @@ export const metadata: Metadata = {
     url: "https://toddlersworld.com",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "https://toddlersworld.com/logo.png", // ✅ Logo for OG
+        width: 300,
+        height: 300,
+        alt: "ToddlersWorld Logo",
+      },
+      {
+        url: "https://toddlersworld.com/og-image.jpg", // ✅ Optional site preview
         width: 1200,
         height: 630,
-        alt: "ToddlersWorld",
+        alt: "ToddlersWorld Site Preview",
       },
     ],
   },
@@ -37,11 +43,11 @@ export const metadata: Metadata = {
     title: "ToddlersWorld - Premium Baby Essentials",
     description:
       "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
-    images: ["/og-image.jpg"],
+    images: ["https://toddlersworld.com/logo.png"], // ✅ Logo on Twitter card
   },
   generator: "v0.dev",
   icons: {
-    icon: "/logo.png",
+    icon: "https://toddlersworld.com/logo.png", // ✅ Absolute URL for favicon
   },
 }
 
@@ -53,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="https://toddlersworld.com/logo.png" />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>

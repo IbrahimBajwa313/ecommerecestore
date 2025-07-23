@@ -162,7 +162,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              {product?.rating} ({product?.reviews} reviews)
+              {product?.rating} ({product?.reviews} reviews) 
             </span>
           </div>
 
@@ -248,10 +248,9 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         <Separator />
 
         <Tabs defaultValue="description" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="features">Features</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews</TabsTrigger>
           </TabsList>
 
           <TabsContent value="description" className="mt-6">
@@ -277,13 +276,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             </Card>
           </TabsContent>
 
-          <TabsContent value="reviews" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-muted-foreground">Customer reviews will be displayed here.</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
+      
         </Tabs>
       </div>
     </div>
