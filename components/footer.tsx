@@ -12,7 +12,7 @@ export function Footer() {
     <footer className="border-t sm:mt-16 mt-20 mb-10 dark:border-white/10">
       {/* Newsletter CTA */}
       <div className="relative z-10 w-full flex justify-center">
-        <div className=" w-9/12 md:w-9/12 lg:w-3/5 mx-auto shadow-lg -mb-20 z-20">
+        <div className=" w-10/12 md:w-9/12 lg:w-3/5 mx-auto shadow-lg -mb-20 z-20">
           <div className="bg-gradient-to-r from-[#ab56ff] to-[#4f46e5] text-white rounded-xl shadow-xl border border-white/30 overflow-visible">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4 py-6 md:px-10 md:py-10 relative">
            
