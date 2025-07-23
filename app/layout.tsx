@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         alt: "ToddlersWorld Logo",
       },
       {
-        url: "https://toddlersworld.online/og-image.jpg", // ✅ Optional site preview
+        url: "https://toddlersworld.online/logo.jpg", // ✅ Optional site preview
         width: 1200,
         height: 630,
         alt: "ToddlersWorld Site Preview",
