@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { ContactForm } from "@/components/contact-form"
+import { FAQSection } from "@/components/faq-section"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
 
@@ -82,46 +83,7 @@ export default function ContactPage() {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">How can I track my order?</h3>
-                <p className="text-muted-foreground text-sm">
-                  You can track your order by logging into your account and visiting the "My Orders" section, or by
-                  using the tracking number sent to your email.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">What is your return policy?</h3>
-                <p className="text-muted-foreground text-sm">
-                  We offer a 30-day return policy for most items. Products must be in original condition with all
-                  packaging and accessories.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">Do you offer international shipping?</h3>
-                <p className="text-muted-foreground text-sm">
-                  Yes, we ship to most countries worldwide. Shipping costs and delivery times vary by location.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="font-semibold mb-2">How can I change or cancel my order?</h3>
-                <p className="text-muted-foreground text-sm">
-                  Orders can be modified or cancelled within 1 hour of placement. After that, please contact our
-                  customer service team.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        <FAQSection/>
       </main>
       <Footer />
     </div>
