@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Mail, Phone, MapPin, Clock } from "lucide-react"
 
 export const metadata = {
-  title: "Contact Us - ModernStore",
+  title: "Contact Us - ToddlersWorld",
   description: "Get in touch with our customer support team",
 }
 
@@ -14,19 +14,19 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: "Email",
-      details: "support@modernstore.com",
+      details: "a.huraira.ah16@gmail.com",
       description: "Send us an email anytime",
     },
     {
       icon: Phone,
       title: "Phone",
-      details: "+1 (555) 123-4567",
+      details: "+92 3039008580",
       description: "Mon-Fri from 8am to 6pm",
     },
     {
       icon: MapPin,
       title: "Address",
-      details: "123 Commerce Street, New York, NY 10001",
+      details: "Govt. Colony Tanki Chowk Okara",
       description: "Visit our headquarters",
     },
     {
