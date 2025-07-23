@@ -22,16 +22,16 @@ export const metadata: Metadata = {
     description:
       "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
     type: "website",
-    url: "https://toddlersworld.com",
+    url: "https://toddlersworld.online",
     images: [
       {
-        url: "https://toddlersworld.com/logo.png", // ✅ Logo for OG
+        url: "https://toddlersworld.online/logo.png", // ✅ Logo for OG
         width: 300,
         height: 300,
         alt: "ToddlersWorld Logo",
       },
       {
-        url: "https://toddlersworld.com/og-image.jpg", // ✅ Optional site preview
+        url: "https://toddlersworld.online/og-image.jpg", // ✅ Optional site preview
         width: 1200,
         height: 630,
         alt: "ToddlersWorld Site Preview",
@@ -43,11 +43,11 @@ export const metadata: Metadata = {
     title: "ToddlersWorld - Premium Baby Essentials",
     description:
       "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
-    images: ["https://toddlersworld.com/logo.png"], // ✅ Logo on Twitter card
+    images: ["https://toddlersworld.online/logo.png"], // ✅ Logo on Twitter card
   },
   generator: "v0.dev",
   icons: {
-    icon: "https://toddlersworld.com/logo.png", // ✅ Absolute URL for favicon
+    icon: "https://toddlersworld.online/logo.png", // ✅ Absolute URL for favicon
   },
 }
 
@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="https://toddlersworld.com/logo.png" />
+        <link rel="icon" href="https://toddlersworld.online/logo.png" />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
