@@ -45,7 +45,7 @@ export const metadata: Metadata = {
       "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
     images: ["https://toddlersworld.online/logo.png"], // ✅ Logo on Twitter card
   },
-  generator: "v0.dev",
+  
   icons: {
     icon: "https://toddlersworld.online/logo.png", // ✅ Absolute URL for favicon
   },

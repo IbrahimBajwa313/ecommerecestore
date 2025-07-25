@@ -13,7 +13,6 @@ export function HeroSection() {
     "F2.png",
     "F3.png",
     "F4.png",
-    "F5.png",
   ]
 
   const [current, setCurrent] = useState(0)
