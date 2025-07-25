@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
 import { usePathname } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import Cookies from "js-cookie"
 
 interface Product {
@@ -58,10 +58,10 @@ export function ProductDetails({ product }: ProductDetailsProps) {
             name: product.name,
             price: product.price,
             image: product.images[0] || "/placeholder.svg",
-            stock: product.stock
+            stock: product.stock,
           },
           quantity,
-          addedAt: new Date().toISOString()
+          addedAt: new Date().toISOString(),
         })
       }
 
@@ -105,17 +105,34 @@ export function ProductDetails({ product }: ProductDetailsProps) {
     : 0
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+    >
       {/* Product Images */}
       <div className="space-y-4">
-        <div className="aspect-square relative overflow-hidden rounded-lg border">
-          <Image
-            src={product?.images[selectedImage] || "/placeholder.svg"}
-            alt={product?.name}
-            fill
-            className="object-cover"
-            priority
-          />
+        <div className="aspect-square relative overflow-hidden rounded-lg border bg-white">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedImage}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0"
+            >
+              <Image
+                src={product?.images[selectedImage] || "/placeholder.svg"}
+                alt={product?.name}
+                fill
+                className="object-cover rounded-lg"
+                priority
+              />
+            </motion.div>
+          </AnimatePresence>
+
           {discountPercentage > 0 && (
             <Badge className="absolute top-4 left-4 bg-red-500 hover:bg-red-600">
               -{discountPercentage}%
@@ -124,21 +141,29 @@ export function ProductDetails({ product }: ProductDetailsProps) {
         </div>
 
         {product?.images.length > 1 && (
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
             {product?.images.map((image, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedImage(index)}
-                className={`aspect-square relative overflow-hidden rounded-lg border-2 ${
-                  selectedImage === index ? "border-primary" : "border-gray-200"
+                className={`aspect-square relative overflow-hidden rounded-md border-2 transition-all duration-200 ${
+                  selectedImage === index
+                    ? "border-primary ring-2 ring-primary/50"
+                    : "border-gray-200"
                 }`}
               >
-                <Image
-                  src={image || "/placeholder.svg"}
-                  alt={`${product?.name} ${index + 1}`}
-                  fill
-                  className="object-cover"
-                />
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={image || "/placeholder.svg"}
+                    alt={`${product?.name} ${index + 1}`}
+                    fill
+                    className="object-cover rounded-md"
+                  />
+                </motion.div>
               </button>
             ))}
           </div>
@@ -162,7 +187,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              {product?.rating} ({product?.reviews} reviews) 
+              {product?.rating} ({product?.reviews} reviews)
             </span>
           </div>
 
@@ -275,10 +300,8 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               </CardContent>
             </Card>
           </TabsContent>
-
-      
         </Tabs>
       </div>
-    </div>
+    </motion.div>
   )
 }

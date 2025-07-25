@@ -8,25 +8,45 @@ import { useState, useEffect } from "react"
 import clsx from "clsx"
 
 export function HeroSection() {
-  const images = [
-    "F1.png",
-    "F2.png",
-    "F3.png",
-    "F4.png",
-  ]
-
+  const images = ["F1.png", "F2.png", "F3.png", "F4.png"]
   const [current, setCurrent] = useState(0)
+  const [direction, setDirection] = useState(1) // 1 for next, -1 for prev
 
   useEffect(() => {
     const interval = setInterval(() => {
+      setDirection(1)
       setCurrent((prev) => (prev + 1) % images.length)
-    }, 3000)
+    }, 2000)
     return () => clearInterval(interval)
-  }, [])
+  }, [images.length])
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+      position: "absolute" as const,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      position: "relative" as const,
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? -300 : 300,
+      opacity: 0,
+      position: "absolute" as const,
+    }),
+  }
+
+  const handleDotClick = (idx: number) => {
+    if (idx === current) return
+    setDirection(idx > current ? 1 : -1)
+    setCurrent(idx)
+  }
 
   return (
     <section className="relative bg-gradient-to-r from-purple-600 to-blue-600 text-white overflow-hidden">
-      <div className="container mx-auto px-4 py-20 lg:py-24">
+      <div className="container mx-auto px-4 py-14 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Section */}
           <motion.div
@@ -42,7 +62,7 @@ export function HeroSection() {
                 transition={{ delay: 0.2, duration: 0.8 }}
                 className="text-4xl lg:text-6xl font-bold leading-tight"
               >
-                Discover Premium Baby Essentials for Happy Little Moments
+                Discover Premium Baby Essentials 
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
@@ -50,8 +70,7 @@ export function HeroSection() {
                 transition={{ delay: 0.4, duration: 0.8 }}
                 className="text-xl lg:text-2xl text-purple-100"
               >
-                Shop adorable, safe, and high-quality baby products loved by parents.
-                Fast shipping & 24/7 support – because your baby deserves the best.
+                Because your baby deserves the best.
               </motion.p>
             </div>
 
@@ -98,26 +117,28 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Section - Image Carousel */}
+          {/* Right Section - Sliding Image Carousel */}
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
             className="relative w-full flex flex-col items-center"
           >
-            <div className="relative w-full max-w-[500px] overflow-hidden rounded-2xl shadow-2xl">
-              <AnimatePresence mode="wait">
+            <div className="relative w-full max-w-[500px] h-[500px] overflow-hidden rounded-2xl shadow-2xl">
+              <AnimatePresence custom={direction} mode="popLayout">
                 <motion.img
                   key={images[current]}
-                  src={`${images[current]}?height=500&width=500`}
+                  src={`${images[current]}`}
                   alt={`Hero Product ${current + 1}`}
                   width={500}
                   height={500}
-                  className="object-cover rounded-2xl w-full h-auto"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  className="object-cover w-full h-full rounded-2xl"
+                  custom={direction}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.4 }}
                 />
               </AnimatePresence>
             </div>
@@ -127,10 +148,10 @@ export function HeroSection() {
               {images.map((_, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setCurrent(idx)}
+                  onClick={() => handleDotClick(idx)}
                   className={clsx(
-                    "w-3 h-3 rounded-full transition-colors",
-                    current === idx ? "bg-white" : "bg-white/40"
+                    "w-3 h-3 rounded-full transition-all",
+                    current === idx ? "bg-white scale-110" : "bg-white/40"
                   )}
                 />
               ))}
