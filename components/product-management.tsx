@@ -137,7 +137,7 @@ const ProductForm = React.memo<{
 
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor={`${isEdit ? "edit-" : ""}price`}>Price ($)</Label>
+            <Label htmlFor={`${isEdit ? "edit-" : ""}price`}>Price (Rs.)</Label>
             <Input
               id={`${isEdit ? "edit-" : ""}price`}
               type="number"
@@ -148,7 +148,7 @@ const ProductForm = React.memo<{
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor={`${isEdit ? "edit-" : ""}originalPrice`}>Original Price ($)</Label>
+            <Label htmlFor={`${isEdit ? "edit-" : ""}originalPrice`}>Original Price (Rs.)</Label>
             <Input
               id={`${isEdit ? "edit-" : ""}originalPrice`}
               type="number"
@@ -736,9 +736,9 @@ export function ProductManagement(): ReactElement {
                     <TableCell>{product.category.name}</TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium">${product.price}</div>
+                        <div className="font-medium">Rs.{product.price}</div>
                         {product.originalPrice && (
-                          <div className="text-sm text-gray-500 line-through">${product.originalPrice}</div>
+                          <div className="text-sm text-gray-500 line-through">Rs.{product.originalPrice}</div>
                         )}
                       </div>
                     </TableCell>

@@ -1,13 +1,14 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+// app/layout.tsx
 import "./globals.css"
+import { Inter } from "next/font/google"
+import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { AuthProvider } from "@/components/auth-provider"
 import { CartProvider } from "@/context/cart-context"
-import Image from "next/image"
 import Link from "next/link"
+import Image from "next/image"
+import FeedbackPopup from "@/components/feedback-popup"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -25,13 +26,13 @@ export const metadata: Metadata = {
     url: "https://toddlersworld.online",
     images: [
       {
-        url: "https://toddlersworld.online/logo.png", // ✅ Logo for OG
+        url: "https://toddlersworld.online/logo.png",
         width: 300,
         height: 300,
         alt: "ToddlersWorld Logo",
       },
       {
-        url: "https://toddlersworld.online/logo.jpg", // ✅ Optional site preview
+        url: "https://toddlersworld.online/logo.jpg",
         width: 1200,
         height: 630,
         alt: "ToddlersWorld Site Preview",
@@ -43,31 +44,25 @@ export const metadata: Metadata = {
     title: "ToddlersWorld - Premium Baby Essentials",
     description:
       "Shop adorable, safe, and high-quality baby products loved by parents. Fast shipping & 24/7 support – because your baby deserves the best.",
-    images: ["https://toddlersworld.online/logo.png"], // ✅ Logo on Twitter card
+    images: ["https://toddlersworld.online/logo.png"],
   },
-  
   icons: {
-    icon: "https://toddlersworld.online/logo.png", // ✅ Absolute URL for favicon
+    icon: "https://toddlersworld.online/logo.png",
   },
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="https://toddlersworld.online/logo.png" />
-      </head>
+      <head />
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <CartProvider>
               {children}
+              <FeedbackPopup /> {/* ✅ Inject client popup here */}
 
-              {/* WhatsApp Floating Button */}
+              {/* WhatsApp Button */}
               <Link
                 href="https://wa.me/923039008580"
                 target="_blank"
@@ -82,8 +77,9 @@ export default function RootLayout({
                   className="animate-whatsapp-spin"
                 />
               </Link>
+
+              <Toaster />
             </CartProvider>
-            <Toaster />
           </AuthProvider>
         </ThemeProvider>
       </body>

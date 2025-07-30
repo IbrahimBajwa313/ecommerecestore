@@ -8,13 +8,20 @@ export async function GET(request: NextRequest) {
     await connectDB()
 
     const { searchParams } = new URL(request.url)
-    const page = Number.parseInt(searchParams.get("page") || "1")
-    const limit = Number.parseInt(searchParams.get("limit") || "12")
+
     const category = searchParams.get("category")
     const search = searchParams.get("search")
     const minPrice = searchParams.get("minPrice")
     const maxPrice = searchParams.get("maxPrice")
     const featured = searchParams.get("featured")
+
+    // Default to 12 only if filters are applied; otherwise, return all
+    const pageParam = searchParams.get("page")
+    const limitParam = searchParams.get("limit")
+
+    const page = pageParam ? Number.parseInt(pageParam) : 1
+    const limit = limitParam ? Number.parseInt(limitParam) : 0 // 0 means no limit
+    const skip = (page - 1) * limit
 
     // Build query
     const query: any = { status: "active" }
@@ -36,28 +43,28 @@ export async function GET(request: NextRequest) {
       if (maxPrice) query.price.$lte = Number.parseFloat(maxPrice)
     }
 
-    // For featured products, you might have a featured field or use high ratings
     if (featured === "true") {
       query.rating = { $gte: 5 }
     }
 
-    const skip = (page - 1) * limit
-
-    const products = await Product.find(query)
+    const productsQuery = Product.find(query)
       .populate("category", "name slug")
       .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean()
 
+    if (limit > 0) {
+      productsQuery.skip(skip).limit(limit)
+    }
+
+    const products = await productsQuery.lean()
     const total = await Product.countDocuments(query)
+
     return NextResponse.json({
       products,
       pagination: {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit),
+        pages: limit > 0 ? Math.ceil(total / limit) : 1,
       },
     })
   } catch (error) {

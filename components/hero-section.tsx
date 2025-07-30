@@ -10,13 +10,13 @@ import clsx from "clsx"
 export function HeroSection() {
   const images = ["F1.png", "F2.png", "F3.png", "F4.png"]
   const [current, setCurrent] = useState(0)
-  const [direction, setDirection] = useState(1) // 1 for next, -1 for prev
+  const [direction, setDirection] = useState(1)
 
   useEffect(() => {
     const interval = setInterval(() => {
       setDirection(1)
       setCurrent((prev) => (prev + 1) % images.length)
-    }, 2000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [images.length])
 
@@ -46,8 +46,8 @@ export function HeroSection() {
 
   return (
     <section className="relative bg-gradient-to-r from-purple-600 to-blue-600 text-white overflow-hidden">
-      <div className="container mx-auto px-4 py-14 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="container mx-auto px-4 py-12 lg:py-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-12 items-center">
           {/* Left Section */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -64,14 +64,6 @@ export function HeroSection() {
               >
                 Discover Premium Baby Essentials 
               </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-                className="text-xl lg:text-2xl text-purple-100"
-              >
-                Because your baby deserves the best.
-              </motion.p>
             </div>
 
             <motion.div
@@ -117,33 +109,30 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right Section - Sliding Image Carousel */}
+          {/* Right Section - Image Carousel */}
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 1, duration: 1 }}
             className="relative w-full flex flex-col items-center"
           >
-            <div className="relative w-full max-w-[500px] h-[500px] overflow-hidden rounded-2xl shadow-2xl">
+            <div className="relative w-full aspect-[4/5] max-w-[500px] overflow-hidden rounded-2xl ">
               <AnimatePresence custom={direction} mode="popLayout">
                 <motion.img
                   key={images[current]}
                   src={`${images[current]}`}
                   alt={`Hero Product ${current + 1}`}
-                  width={500}
-                  height={500}
-                  className="object-cover w-full h-full rounded-2xl"
+                  className="object-contain w-full h-full rounded-2xl"
                   custom={direction}
                   variants={variants}
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.5 }}
                 />
               </AnimatePresence>
             </div>
 
-            {/* Dots */}
             <div className="flex mt-4 space-x-2">
               {images.map((_, idx) => (
                 <button

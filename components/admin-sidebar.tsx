@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   LayoutDashboard,
@@ -49,6 +50,12 @@ const sidebarItems = [
     href: "/admin/settings",
     icon: Settings,
   },
+  {
+    title: "User Feedback",
+    href: "/admin/user-feedback",
+    icon: MessageSquare, // you'll need to import this icon
+  }
+  
 ]
 
 interface AdminSidebarProps {
