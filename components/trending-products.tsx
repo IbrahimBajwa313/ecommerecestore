@@ -131,7 +131,7 @@ export function TrendingProducts() {
                   />
 
                   {/* Large Counter Badge */}
-                  <div className="absolute left-[-.2rem] bottom-[-1rem] z-10 text-blue-950 font-extrabold text-[8rem] md:text-[7rem] lg:text-[7rem] leading-none select-none pointer-events-none font-myFont">
+                  <div className="absolute left-[-.3rem] sm:left-[-.2rem] bottom-[-1.2rem] sm:bottom-[-1rem] z-10 text-blue-950 font-extrabold text-[8rem] md:text-[7rem] lg:text-[7rem] leading-none select-none pointer-events-none font-myFont">
   {index + 1}
 </div>
 
