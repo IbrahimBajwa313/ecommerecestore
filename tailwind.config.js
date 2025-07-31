@@ -9,6 +9,9 @@ module.exports = {
     "*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    fontFamily: {
+      myFont: ['MyFont'], // 'myFont' is the custom name you'll use in className
+    },
     container: {
       center: true,
       padding: "2rem",

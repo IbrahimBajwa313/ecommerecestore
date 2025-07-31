@@ -70,28 +70,29 @@ export function CategorySection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category) => (
-            <Link key={category._id} href={`/products?category=${category.slug}`}>
-              <Card className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="relative w-full h-48">
-                    <Image
-                      src={category.image || "/placeholder.svg?height=200&width=300"}
-                      alt={category.name}
-                      layout="fill"
-                      objectFit="cover"
-                      className=" group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-300" />
-                    <div className="absolute inset-0 flex flex-col justify-center items-center text-white px-4 text-center">
-                      <h3 className="text-2xl font-bold drop-shadow-md mb-1">{category.name}</h3>
-                      {category.description && (
-                        <p className="text-sm opacity-90">{category.description}</p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+         <Link key={category._id} href={`/products?category=${category.slug}`}>
+         <Card className="group hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+           <CardContent className="p-0">
+             <div className="relative w-full h-48">
+               <Image
+                 src={category.image || "/placeholder.svg?height=200&width=300"}
+                 alt={category.name}
+                 layout="fill"
+                 objectFit="cover"
+                 className="group-hover:scale-105 transition-transform duration-300"
+               />
+               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300" />
+               <div className="absolute inset-0 flex flex-col justify-end items-start text-white px-4 py-3">
+                 <h3 className="text-lg font-semibold mb-1 drop-shadow-sm">{category.name}</h3>
+                 {category.description && (
+                   <p className="text-sm opacity-90 line-clamp-2">{category.description}</p>
+                 )}
+               </div>
+             </div>
+           </CardContent>
+         </Card>
+       </Link>
+       
           ))}
         </div>
 

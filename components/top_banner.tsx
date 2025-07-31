@@ -9,6 +9,7 @@ export function TopBanner() {
           🎁 Order Now To Get a Voucher{"\u00A0\u00A0\u00A0\u00A0"}
           💫 Minimum Order Of Rs. 2000/-{"\u00A0\u00A0\u00A0\u00A0"}
           🎈 Follow On Insta To Get A Coupon{"\u00A0\u00A0\u00A0\u00A0"}
+          ✅ Trusted by parents in 30+ cities{"\u00A0\u00A0\u00A0\u00A0"}
           🚚 Free Delivery Nationwide{"\u00A0\u00A0\u00A0\u00A0"}
           🎁 Order Now To Get a Voucher{"\u00A0\u00A0\u00A0\u00A0"}
           💫 Minimum Order Of Rs. 2000/-{"\u00A0\u00A0\u00A0\u00A0"}

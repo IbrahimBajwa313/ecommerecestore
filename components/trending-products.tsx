@@ -131,9 +131,10 @@ export function TrendingProducts() {
                   />
 
                   {/* Large Counter Badge */}
-                  <div className="absolute  left-2 bottom-2 z-10 bg-black/50 text-gray-200 font-extrabold text-[7rem] md:text-[7rem] lg:text-[7rem] leading-none px-2 py-1 rounded-md shadow-md select-none pointer-events-none">
-                    {index + 1}
-                  </div>
+                  <div className="absolute left-[-.2rem] bottom-[-1rem] z-10 text-blue-950 font-extrabold text-[8rem] md:text-[7rem] lg:text-[7rem] leading-none select-none pointer-events-none font-myFont">
+  {index + 1}
+</div>
+
                 </div>
               </Link>
             </div>

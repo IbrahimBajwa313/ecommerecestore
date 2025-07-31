@@ -86,3 +86,10 @@
   animation: fade-in 0.3s ease-out forwards;
 }
 
+@font-face {
+  font-family: 'MyFont';
+  src: url('/fonts/MyFont.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+

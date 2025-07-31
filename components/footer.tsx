@@ -133,11 +133,11 @@ export function Footer() {
             <span>
               Developed by{" "}
               <Link
-                href="https://ibrahimbajwa.vercel.app/"
+                href="https://www.techcognify.com/"
                 target="_blank"
                 className="hover:underline underline-offset-2 text-primary font-medium"
               >
-                Ibrahim Bajwa
+                TECHCOGNIFY
               </Link>
             </span>
           </div>
