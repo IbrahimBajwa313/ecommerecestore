@@ -470,10 +470,13 @@ export function ProductManagement(): ReactElement {
           originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
           stock: Number.parseInt(formData.stock),
           rating: parseFloat(formData.rating),
-          features: formData.features
-            .split(",")
-            .map((f) => f.trim())
-            .filter(Boolean),
+          features:
+  typeof formData.features === "string"
+    ? formData.features.split("\n").map(f => f.trim()).filter(Boolean)
+    : formData.features,
+
+
+
           tags: formData.tags
             .split(",")
             .map((t) => t.trim())
@@ -525,12 +528,14 @@ export function ProductManagement(): ReactElement {
           originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
           stock: Number.parseInt(formData.stock),
           rating: parseFloat(formData.rating),
-          features: formData.features
-            .split(",")
-            .map((f) => f.trim())
-            .filter(Boolean),
+          features:
+  typeof formData.features === "string"
+    ? formData.features.split("\n").map(f => f.trim()).filter(Boolean)
+    : formData.features,
+
+        
           tags: formData.tags
-            .split(",")
+            .split("\n")
             .map((t) => t.trim())
             .filter(Boolean),
         }
@@ -607,7 +612,7 @@ export function ProductManagement(): ReactElement {
       stock: product.stock.toString(),
       sku: product.sku,
       status: product.status,
-      features: product.features.join(", "),
+      features: Array.isArray(product.features) ? product.features.join("\n") : product.features,
       tags: product.tags.join(", "),
       images: product.images,
       rating: product.rating?.toString() || "4", // <- Add this
