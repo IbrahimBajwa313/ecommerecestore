@@ -7,8 +7,19 @@ import { cn } from "@/lib/utils"
 const faqs = [
   {
     question: "🌸 How can I track my order?",
-    answer: "Click here and enter your tracking number (sent to you on WhatsApp) to trace your order. Or simply contact our customer support team for assistance."
-  },
+    answer: (
+      <>
+        <a
+          href="https://trax.pk/tracking/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#4f46e5] dark:text-white underline hover:opacity-80 transition"
+        >
+          Click here
+        </a>{" "}
+        and enter your tracking number (sent to you on WhatsApp) to trace your order. Or simply contact our customer support team for assistance.
+      </>
+    )  },
   {
     question: "🌸 How long does home delivery take?",
     answer: "We deliver all across Pakistan within 3–5 working days."

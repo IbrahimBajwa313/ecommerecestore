@@ -41,7 +41,7 @@ export function CategorySection() {
     <div className="text-center mb-12">
       <h2 className="text-3xl lg:text-4xl font-bold mb-4">Shop by Category</h2>
       <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-        Explore our diverse range of categories to find exactly what you're looking for
+      Dive into Toddlers World — where every category brings you closer to the perfect pick for your baby!
       </p>
     </div>
   )
