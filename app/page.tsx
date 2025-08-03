@@ -5,6 +5,7 @@ import { TrendingProducts } from "@/components/trending-products"
 import { EveryonesFavourite } from "@/components/everyone's-Favourite"
 import { CategorySection } from "@/components/category-section"
 import { FAQSection } from "@/components/faq-section"
+import BestSellingSection from "@/components/BestSellingSection"
 import { TopBanner } from "@/components/top_banner"
 import {WhatsappReviewSection} from "@/components/reviews"
 // app/layout.js or pages/_app.js
@@ -23,6 +24,7 @@ export default function HomePage() {
 
         <TrendingProducts /> 
         <CategorySection />
+        <BestSellingSection />
         <WhatsappReviewSection/>
       </main>
       <FAQSection/>
