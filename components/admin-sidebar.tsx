@@ -15,11 +15,7 @@ import {
 } from "lucide-react"
 
 const sidebarItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
+
   {
     title: "Products",
     href: "/admin/products",
@@ -36,19 +32,9 @@ const sidebarItems = [
     icon: ShoppingCart,
   },
   {
-    title: "Customers",
-    href: "/admin/customers",
+    title: "Contact info",
+    href: "/admin/contact_info",
     icon: Users,
-  },
-  {
-    title: "Analytics",
-    href: "/admin/analytics",
-    icon: BarChart3,
-  },
-  {
-    title: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
   },
   {
     title: "User Feedback",

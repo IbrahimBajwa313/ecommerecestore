@@ -1,13 +1,17 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
 export function ContactForm() {
@@ -26,15 +30,23 @@ export function ContactForm() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      toast({
-        title: "Message sent",
-        description: "Thank you for contacting us. We'll get back to you soon!",
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       })
 
-      // Reset form
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Something went wrong")
+      }
+
+      toast({
+        title: "Message sent successfully ✅",
+        description: "We’ll get back to you soon!",
+      })
+
       setFormData({
         name: "",
         email: "",
@@ -42,10 +54,10 @@ export function ContactForm() {
         category: "",
         message: "",
       })
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Failed to send",
+        description: error.message,
         variant: "destructive",
       })
     } finally {
@@ -54,7 +66,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
@@ -72,7 +84,7 @@ export function ContactForm() {
           <Input
             id="email"
             type="email"
-            placeholder="your.email@example.com"
+            placeholder="your@email.com"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
@@ -82,7 +94,10 @@ export function ContactForm() {
 
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+        <Select
+          value={formData.category}
+          onValueChange={(value) => setFormData({ ...formData, category: value })}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
@@ -102,7 +117,7 @@ export function ContactForm() {
         <Input
           id="subject"
           type="text"
-          placeholder="Brief description of your inquiry"
+          placeholder="Brief description"
           value={formData.subject}
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
           required
@@ -113,7 +128,7 @@ export function ContactForm() {
         <Label htmlFor="message">Message</Label>
         <Textarea
           id="message"
-          placeholder="Please provide details about your inquiry..."
+          placeholder="Write your message here..."
           rows={5}
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -121,7 +136,11 @@ export function ContactForm() {
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button
+        type="submit"
+        className="bg-[#7C3AED] hover:bg-[#8B4DF0] w-full"
+        disabled={isLoading}
+      >
         {isLoading ? "Sending..." : "Send Message"}
       </Button>
     </form>

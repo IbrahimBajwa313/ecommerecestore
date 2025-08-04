@@ -1,4 +1,4 @@
-import { CustomerManagement } from "@/components/customer-management"
+import { ContactManagement } from "@/components/customer-management"
 
 export const metadata = {
   title: "Customer Management - Admin",
@@ -13,7 +13,7 @@ export default function CustomersAdminPage() {
         <p className="text-gray-600 dark:text-gray-400">Manage customer accounts and information</p>
       </div>
 
-      <CustomerManagement />
+      <ContactManagement />
     </div>
   )
 }
