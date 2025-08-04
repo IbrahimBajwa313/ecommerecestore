@@ -40,8 +40,12 @@ const sidebarItems = [
     title: "User Feedback",
     href: "/admin/user-feedback",
     icon: MessageSquare, // you'll need to import this icon
-  }
-  
+  },
+  {
+    title: "User info",
+    href: "/admin/user_info",
+    icon: Users,
+  },
 ]
 
 interface AdminSidebarProps {
