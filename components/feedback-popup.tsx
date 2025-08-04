@@ -10,7 +10,7 @@ export default function FeedbackPopup() {
   const [showThankYou, setShowThankYou] = useState(false)
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowModal(true), 100) // Show after 22 seconds
+    const timer = setTimeout(() => setShowModal(true), 21000) // Show after 22 seconds
     return () => clearTimeout(timer)
   }, [])
 
