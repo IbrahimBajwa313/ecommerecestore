@@ -1,16 +1,16 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Eye, EyeOff, Mail } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export function RegisterForm() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -25,28 +25,51 @@ export function RegisterForm() {
     e.preventDefault()
 
     if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Password mismatch",
+      return toast({
+        title: "Password Mismatch",
         description: "Passwords do not match. Please try again.",
         variant: "destructive",
       })
-      return
     }
 
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || "Registration failed")
+      }
 
       toast({
-        title: "Account created",
-        description: "Welcome to ModernStore! Please check your email to verify your account.",
+        title: "Welcome!",
+        description: "Account created successfully. Redirecting to login...",
       })
-    } catch (error) {
+
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      })
+
+      setTimeout(() => {
+        router.push("/auth/login")
+      }, 1500)
+    } catch (err: any) {
       toast({
-        title: "Registration failed",
-        description: "Something went wrong. Please try again.",
+        title: "Error",
+        description: err.message || "Something went wrong.",
         variant: "destructive",
       })
     } finally {
@@ -129,7 +152,7 @@ export function RegisterForm() {
         </Label>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full bg-[#7C3AED] hover:bg-[#7e44e4]" disabled={isLoading}>
         {isLoading ? "Creating account..." : "Create Account"}
       </Button>
 
@@ -137,15 +160,7 @@ export function RegisterForm() {
         <div className="absolute inset-0 flex items-center">
           <Separator className="w-full" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-        </div>
       </div>
-
-      <Button type="button" variant="outline" className="w-full bg-transparent">
-        <Mail className="mr-2 h-4 w-4" />
-        Continue with Google
-      </Button>
     </form>
   )
 }

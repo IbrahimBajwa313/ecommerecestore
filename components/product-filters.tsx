@@ -113,6 +113,7 @@ export function ProductFilters() {
                 <div key={category._id} className="flex items-center space-x-2">
                   <Checkbox
                     id={`desktop-${category.slug}`}
+                    className="border border-[#7C3AED]"
                     checked={selectedCategories.includes(category.slug)}
                     onCheckedChange={(checked) =>
                       handleCategoryChange(category.slug, checked as boolean)
@@ -161,8 +162,8 @@ export function ProductFilters() {
             </details>
           </div>
 
-          <div className="flex space-x-2">
-            <Button onClick={applyFilters} className="flex-1">
+          <div className="flex  space-x-2">
+            <Button onClick={applyFilters} className="flex-1 bg-[#7C3AED] hover:bg-[#8B4DF0]">
               Apply Filters
             </Button>
             <Button variant="outline" onClick={clearFilters}>

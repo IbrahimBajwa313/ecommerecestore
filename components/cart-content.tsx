@@ -202,7 +202,8 @@ export function CartContent() {
             </div>
 
             <div className="mt-6 space-y-3">
-              <Button asChild className="w-full" size="lg">
+              <Button asChild className="w-full bg-[#7C3AED] hover:bg-[#8B4DF0]
+" size="lg">
                 <Link href="/checkout">Proceed to Checkout</Link>
               </Button>
               <Button asChild variant="outline" className="w-full bg-transparent">

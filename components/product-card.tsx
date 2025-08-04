@@ -155,11 +155,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
           <Button
             onClick={handleAddToCart}
-            className="w-full transition-all duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] 
+            className="w-full transition-all bg-[#7C3AED] hover:bg-[#8B4DF0] duration-500 ease-[cubic-bezier(0.22,0.61,0.36,1)] 
                       translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
             size="sm"
           >
-            <ShoppingCart className="w-4 h-4 mr-2 transition-transform group-hover:scale-125" />
+            <ShoppingCart className="w-4 h-4  mr-2 transition-transform group-hover:scale-125" />
             {isAddingToCart ? "Adding..." : "Add to Cart"}
           </Button>
         </div>

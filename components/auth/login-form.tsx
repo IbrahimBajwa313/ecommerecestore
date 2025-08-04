@@ -22,7 +22,7 @@ export function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsLoading(true)
+    setIsLoading(true) 
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -45,8 +45,9 @@ export function LoginForm() {
         // Redirect based on user role
         if (data.user.role === "admin") {
           router.push("/admin/products")
-        } else {
-          router.push("/")
+         
+        }  else {
+          window.location.href = "/"
         }
       } else {
         throw new Error(data.error || "Login failed")
@@ -97,7 +98,7 @@ export function LoginForm() {
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button type="submit" className="w-full bg-[#7C3AED] hover:bg-[#7e44e4]" disabled={isLoading}>
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>
 

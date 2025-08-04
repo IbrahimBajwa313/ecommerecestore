@@ -8,16 +8,17 @@ export async function POST(request: NextRequest) {
     await connectDB()
     const { email, password, name } = await request.json()
 
-    // Check if user already exists
+    if (!email || !password || !name) {
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+    }
+
     const existingUser = await User.findOne({ email })
     if (existingUser) {
       return NextResponse.json({ error: "User already exists" }, { status: 400 })
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Create user
     const user = await User.create({
       email,
       password: hashedPassword,

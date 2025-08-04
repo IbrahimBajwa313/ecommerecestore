@@ -131,9 +131,17 @@ export function TrendingProducts() {
                   />
 
                   {/* Large Counter Badge */}
-                  <div className="absolute left-[-.3rem] sm:left-[-.2rem] bottom-[-1.2rem] sm:bottom-[-1rem] z-10 text-blue-950 font-extrabold text-[8rem] md:text-[7rem] lg:text-[7rem] leading-none select-none pointer-events-none font-myFont">
+                  <div
+  className="absolute left-[-.3rem] sm:left-[-.2rem] bottom-[-1.2rem] sm:bottom-[-1rem] z-10 font-extrabold text-[8rem] md:text-[7rem] lg:text-[7rem] leading-none select-none pointer-events-none font-myFont bg-clip-text text-transparent"
+  style={{
+    backgroundImage: "linear-gradient(to top right, #ff0080, #7928ca, #00cfff)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  }}
+>
   {index + 1}
 </div>
+
 
                 </div>
               </Link>

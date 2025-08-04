@@ -97,10 +97,10 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-            <Link href="/products" className="text-foreground hover:text-primary transition-colors">Products</Link>
-            <Link href="/categories" className="text-foreground hover:text-primary transition-colors">Categories</Link>
-            <Link href="/ourStory" className="text-foreground hover:text-primary transition-colors">Our Story</Link>
+            <Link href="/" className="text-foreground hover:text-[#7C3AED] transition-colors">Home</Link>
+            <Link href="/products" className="text-foreground hover:text-[#7C3AED] transition-colors">Products</Link>
+            <Link href="/categories" className="text-foreground hover:text-[#7C3AED] transition-colors">Categories</Link>
+            <Link href="/ourStory" className="text-foreground hover:text-[#7C3AED] transition-colors">Our Story</Link>
           </div>
 
           {/* Search Bar */}
@@ -123,10 +123,10 @@ export function Navbar() {
 
             {/* Cart */}
             <Link href="/cart">
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative ">
                 <ShoppingCart className="w-5 h-5" />
                 {cartItemCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 w-5 h-5 flex items-center justify-center p-0 text-xs">
+                  <Badge className="absolute bg-[#7C3AED]  -top-2 -right-2 w-5 h-5 flex items-center justify-center p-0 text-xs">
                     {cartItemCount}
                   </Badge>
                 )}
@@ -135,48 +135,64 @@ export function Navbar() {
 
             {/* User */}
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="w-5 h-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user.name}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Profile Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  {user.role === "admin" && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin/products" className="flex items-center">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Admin Panel
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/auth/login">
-                <Button variant="ghost" size="icon">
-                  <User className="w-5 h-5" />
-                </Button>
-              </Link>
-            )}
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button variant="ghost" size="icon">
+        {user.role === "customer" ? (
+          <img
+            src="/user.jpeg" // replace with your actual image path
+            alt="User"
+            className="w-6 h-8 pb-2 rounded-full object-cover"
+          />
+        ) : (
+          <User className="w-5 h-5" />
+        )}
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuLabel>
+        <div className="flex flex-col space-y-1">
+          <p className="text-sm font-medium">{user.name}</p>
+          <p className="text-xs text-muted-foreground">{user.email}</p>
+          {user.role === "customer" && (
+            <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded w-fit mt-1 font-semibold uppercase tracking-wide">
+              Customer
+            </span>
+          )}
+        </div>
+      </DropdownMenuLabel>
+
+      <DropdownMenuSeparator />
+
+      <DropdownMenuItem asChild>
+        {/* You can add customer-only options here later if needed */}
+      </DropdownMenuItem>
+
+      {user.role === "admin" && (
+        <DropdownMenuItem asChild>
+          <Link href="/admin/products" className="flex items-center">
+            <Settings className="mr-2 h-4 w-4" />
+            Admin Panel
+          </Link>
+        </DropdownMenuItem>
+      )}
+
+      <DropdownMenuSeparator />
+
+      <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600">
+        <LogOut className="mr-2 h-4 w-4" />
+        Logout
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+) : (
+  <Link href="/auth/login">
+    <Button variant="ghost" size="icon">
+      <User className="w-5 h-5" />
+    </Button>
+  </Link>
+)}
+
 
             {/* Mobile Menu Button */}
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -211,26 +227,24 @@ export function Navbar() {
                   </div>
                 </form>
 
-                <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-[#7C3AED] transition-colors py-2">
                   Home
                 </Link>
-                <Link href="/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                <Link href="/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-[#7C3AED] transition-colors py-2">
                   Products
                 </Link>
-                <Link href="/categories" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                <Link href="/categories" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-[#7C3AED] transition-colors py-2">
                   Categories
                 </Link>
-                <Link href="/ourStory" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                <Link href="/ourStory" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-[#7C3AED] transition-colors py-2">
                   Our Story
                 </Link>
 
                 {user ? (
                   <>
-                    <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
-                      Profile Settings
-                    </Link>
+                   
                     {user.role === "admin" && (
-                      <Link href="/admin/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                      <Link href="/admin/products" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-[#7C3AED] transition-colors py-2">
                         Admin Panel
                       </Link>
                     )}
@@ -242,7 +256,7 @@ export function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-primary transition-colors py-2">
+                  <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="text-foreground hover:text-[#7C3AED] transition-colors py-2">
                     Login
                   </Link>
                 )}

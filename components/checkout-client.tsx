@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { OrderSummary } from "@/components/order-summary"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/components/auth-provider"
 
 interface CartItem {
   product: {
@@ -23,6 +24,7 @@ interface CartItem {
 
 export function CheckoutClient() {
   const { toast } = useToast()
+  const { user } = useAuth()
 
   const [isLoading, setIsLoading] = useState(true)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -36,6 +38,15 @@ export function CheckoutClient() {
   const [postalCode, setPostalCode] = useState("")
   const [placingOrder, setPlacingOrder] = useState(false)
 
+  // Autofill user data if logged in
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "")
+      setEmail(user.email || "")
+    }
+  }, [user])
+
+  // Load cart
   useEffect(() => {
     try {
       const cookie = Cookies.get("cart")
@@ -104,7 +115,6 @@ export function CheckoutClient() {
         toast({
           title: "Order Placed 🎉",
           description: "Your order has been placed successfully!",
-          variant: "default",
         })
 
         setTimeout(() => {
@@ -112,7 +122,6 @@ export function CheckoutClient() {
         }, 1000)
       } else {
         const error = await res.json()
-        console.error("Order error:", error)
         toast({
           title: "Failed to Place Order",
           description: error?.message || "Something went wrong.",
@@ -120,7 +129,6 @@ export function CheckoutClient() {
         })
       }
     } catch (err) {
-      console.error("Order error:", err)
       toast({
         title: "Network Error",
         description: "Unable to reach the server. Please try again later.",
@@ -132,7 +140,7 @@ export function CheckoutClient() {
   }
 
   return isLoading ? (
-    <div className="flex justify-center min-h-screen  py-20">
+    <div className="flex justify-center min-h-screen py-20">
       <Loader2 className="h-8 w-8 animate-spin" />
     </div>
   ) : (
@@ -168,7 +176,7 @@ export function CheckoutClient() {
             </div>
 
             <Button
-              className="w-full mt-6"
+              className="w-full mt-6 bg-[#7C3AED] hover:bg-[#813ff3]"
               onClick={handlePlaceOrder}
               disabled={placingOrder}
             >

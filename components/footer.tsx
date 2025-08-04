@@ -66,7 +66,7 @@ export function Footer() {
     <p>
       “I’m passionate about offering premium & safe baby products to support and delight parents.”
     </p>
-    <p className="mt-1 font-semibold not-italic text-primary dark:text-white">
+    <p className="mt-1 font-semibold not-italic text-[#7C3AED] dark:text-white">
       — Abu Huraira, Founder & CEO, Toddlers World
     </p>
   </div>
@@ -77,7 +77,7 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="md:pt-32">
-            <h4 className="text-sm font-semibold mb-4 text-primary dark:text-white">Contact</h4>
+            <h4 className="text-sm font-semibold mb-4 text-[#7C3AED] dark:text-white">Contact</h4>
             <ul className="space-y-2 text-sm text-muted-foreground dark:text-gray-400">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4" /> +92 3039008580
@@ -112,7 +112,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div className="md:pt-32">
-            <h4 className="text-sm font-semibold mb-4 text-primary dark:text-white">Quick Links</h4>
+            <h4 className="text-sm font-semibold mb-4 text-[#7C3AED] dark:text-white">Quick Links</h4>
             <ul className="space-y-2 text-sm text-muted-foreground dark:text-gray-400">
               <li><Link href="/ourStory" className="hover:underline">Our Story</Link></li>
               <li><Link href="/contact" className="hover:underline">Contact Us</Link></li>
@@ -135,7 +135,7 @@ export function Footer() {
               <Link
                 href="https://www.techcognify.com/"
                 target="_blank"
-                className="hover:underline underline-offset-2 text-primary font-medium"
+                className="hover:underline underline-offset-2 text-[#7C3AED] font-medium"
               >
                 TECHCOGNIFY
               </Link>
