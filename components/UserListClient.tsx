@@ -15,7 +15,9 @@ export default function UserListClient() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/auth/user_basic_info")
+        const res = await fetch("/api/auth/user_basic_info", {
+            cache: "no-store", // ✅ prevent cache
+          })
         const data = await res.json()
         if (res.ok) setUsers(data.data)
       } catch (err) {
