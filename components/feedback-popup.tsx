@@ -55,10 +55,10 @@ export default function FeedbackPopup() {
           <div className="fixed inset-0 flex items-center justify-center p-4">
             <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-[#7C3DEA]/10">
               <Dialog.Title className="text-xl font-semibold text-[#7C3DEA] mb-2">
-                💬 What are you looking for?
+                💬 Tell us what's missing in our store!
               </Dialog.Title>
               <p className="text-sm text-gray-600 mb-3 leading-relaxed">
-                Tell us what's missing in our store! We're expanding our collection —
+                We're expanding our collection —
                 your suggestion could be next! 💡✨
               </p>
               <textarea

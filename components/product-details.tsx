@@ -246,7 +246,7 @@ export function ProductDetails({ product }: ProductDetailsProps) {
               className="flex-1"
             >
               <Button
-                className="w-full"
+                className="w-full bg-[#7C3AED] hover:bg-[#8B4DF0]"
                 size="lg"
                 onClick={handleAddToCart}
                 disabled={product?.stock === 0 || isAddingToCart}
@@ -287,19 +287,26 @@ export function ProductDetails({ product }: ProductDetailsProps) {
           </TabsContent>
 
           <TabsContent value="features" className="mt-6">
-            <Card>
-              <CardContent className="p-6">
-                <ul className="space-y-2">
-                  {product?.features.map((feature, index) => (
-                    <li key={index} className="flex items-center">
-                      <div className="w-2 h-2 bg-primary rounded-full mr-3" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </TabsContent>
+  <Card>
+    <CardContent className="p-6">
+      <ul className="space-y-2">
+        {product?.features.map((feature, index) => (
+          <li key={index} className="flex items-center">
+            <div
+              className="min-w-[0.5rem] min-h-[0.5rem] w-2 h-2 mr-3"
+              style={{
+                backgroundColor: '#7C3AED',
+                borderRadius: '9999px',
+              }}
+            />
+            {feature}
+          </li>
+        ))}
+      </ul>
+    </CardContent>
+  </Card>
+</TabsContent>
+
         </Tabs>
       </div>
     </motion.div>
