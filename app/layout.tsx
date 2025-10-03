@@ -55,7 +55,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head > <Script id="meta-pixel" strategy="afterInteractive">
+      <body className={inter.className}>
+        {/* ✅ MOVE Script HERE (at the top of <body>) */}
+        <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -68,9 +70,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             fbq('init', '1277123347467021');
             fbq('track', 'PageView');
           `}
-        </Script></head>
-      <body className={inter.className}>
-      <noscript>
+        </Script>
+
+        {/* ✅ NoScript fallback for users with JS disabled */}
+        <noscript>
           <img
             height="1"
             width="1"
@@ -83,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             <CartProvider>
               {children}
-              <FeedbackPopup /> {/* ✅ Inject client popup here */}
+              <FeedbackPopup />
 
               {/* WhatsApp Button */}
               <Link
