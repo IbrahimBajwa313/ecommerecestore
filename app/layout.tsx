@@ -55,9 +55,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <head>
-        {/* ✅ MOVE Script HERE (at the top of <body>) */}
+      {/* ✅ Script must be inside <head>, not inside <body> */}
+      <head>
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)
@@ -73,23 +72,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
 
-        {/* ✅ NoScript fallback for users with JS disabled */}
+        {/* ✅ NoScript fallback for users with JavaScript disabled */}
         <noscript>
           <img
             height="1"
             width="1"
             style={{ display: "none" }}
             src="https://www.facebook.com/tr?id=1277123347467021&ev=PageView&noscript=1"
+            alt="facebook pixel"
           />
         </noscript>
-        </head>
+      </head>
+
+      <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <CartProvider>
               {children}
               <FeedbackPopup />
 
-              {/* WhatsApp Button */}
+              {/* ✅ WhatsApp Floating Button */}
               <Link
                 href="https://wa.me/923039008580"
                 target="_blank"
