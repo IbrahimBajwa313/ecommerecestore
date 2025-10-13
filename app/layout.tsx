@@ -56,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+        <head>
         {/* ✅ MOVE Script HERE (at the top of <body>) */}
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
@@ -81,7 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             src="https://www.facebook.com/tr?id=1277123347467021&ev=PageView&noscript=1"
           />
         </noscript>
-
+        </head>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <CartProvider>
