@@ -25,7 +25,7 @@ export function WhatsappReviewSection() {
       spacing: 16,
     },
     breakpoints: {
-      "(min-width: 768px)": {
+      "(min-width: 768px)": {  
         slides: { perView: 3, spacing: 20 },
       },
       "(min-width: 1024px)": {

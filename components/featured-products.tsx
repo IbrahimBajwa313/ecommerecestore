@@ -23,7 +23,7 @@ export function FeaturedProducts() {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const response = await fetch("/api/products?featured=true&limit=4")
+      const response = await fetch("/api/products?featured=true&limit=8")
       if (response.ok) {
         const data = await response.json()
         setProducts(data.products)
